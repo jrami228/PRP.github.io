@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #browser-view {
+            transition: opacity 0.3s ease-in-out;
+        }
+        input::placeholder {
+            color: #d1d5db; /* A slightly lighter gray for translucency */
+            opacity: 0.7;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-25%);
+                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+            }
+            50% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Search Form View -->
+    <div id="search-form-view" class="w-full max-w-xl mx-auto">
+        <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6">Case Search</h1>
+            
+            <div class="space-y-6 w-full max-w-md">
+                <!-- Case Number Search Section -->
+                <div class="space-y-4 border-b border-gray-700 pb-6">
+                    <h2 class="text-lg font-semibold text-gray-300">Search ECM/CARA:</h2>
+                    <!-- Workgroup Selector -->
+                    <div class="flex flex-col">
+                        <label for="workgroup" class="text-gray-400 text-sm mb-2">Workgroup</label>
+                        <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                            <option value="UT" selected>UT</option>
+                            <option value="HWR">HWR</option>
+                            <option value="IW5">IW5</option>
+                            <option value="IW6">IW6</option>
+                        </select>
+                    </div>
+
+                    <!-- Case Number Input -->
+                    <div class="flex flex-col">
+                        <label for="case-number" class="text-gray-400 text-sm mb-2">Case Number (Max 5 digits)</label>
+                        <input type="number" id="case-number" maxlength="5" placeholder="e.g., 540 (no running zeros needed)" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
+                    </div>
+
+                    <!-- Search Button -->
+                    <button id="case-search-button" disabled class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Search ECM/CARA
+                    </button>
+                </div>
+
+                <!-- FDEP Facility ID Search Section -->
+                <div class="space-y-4 pt-6">
+                    <h2 class="text-lg font-semibold text-gray-300">Search FDEP Information Portal ("Nexus Portal"):</h2>
+                    <!-- FACID Input -->
+                    <div class="flex flex-col">
+                        <input type="text" id="facid-input" maxlength="7" placeholder="7 digit FACID. e.g., 8504110" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
+                    </div>
+                    
+                    <!-- Search by FACID Button -->
+                    <button id="facid-search-button" disabled class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Search by FACID
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser View -->
+    <div id="browser-view" class="fixed inset-0 hidden">
+        <iframe id="results-iframe" src="" class="w-full h-full border-none"></iframe>
+        <button id="new-search-button" class="fixed top-4 left-4 bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-semibold shadow-xl hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10">
+            New Search
+        </button>
+    </div>
+
+    <div class="mt-12 text-center text-gray-500 text-sm">
+        Made with pure vibes -jr
+    </div>
+
+    <script>
+        // Get DOM elements
+        const searchFormView = document.getElementById('search-form-view');
+        const browserView = document.getElementById('browser-view');
+        const workgroupSelect = document.getElementById('workgroup');
+        const caseNumberInput = document.getElementById('case-number');
+        const caseSearchButton = document.getElementById('case-search-button');
+        const facidInput = document.getElementById('facid-input');
+        const facidSearchButton = document.getElementById('facid-search-button');
+        const resultsIframe = document.getElementById('results-iframe');
+        const newSearchButton = document.getElementById('new-search-button');
+
+        // Base URLs for the document searches
+        const caseBaseURL = "https://ecmrer.miamidade.gov/document-search?page=1&limit=25&sortOrder=date_desc&searchTerm=&facilityName=&folio=&documentType=&startDate=&endDate=&houseNumber=&streetDirection=&streetName=&streetType=&zipCode=&description=&caseNumber=PLACEHOLDER";
+        const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
+
+        // Function to pad the case number with leading zeros
+        const padCaseNumber = (num) => String(num).padStart(5, '0');
+
+        // Function to show the browser view and hide the search form
+        const showBrowserView = () => {
+            searchFormView.classList.add('hidden');
+            browserView.classList.remove('hidden');
+        };
+
+        // Function to show the search form and hide the browser view
+        const showSearchFormView = () => {
+            browserView.classList.add('hidden');
+            searchFormView.classList.remove('hidden');
+        };
+
+        // Event listeners for the input fields to enable/disable their respective search buttons
+        caseNumberInput.addEventListener('input', () => {
+            caseSearchButton.disabled = caseNumberInput.value.length === 0;
+        });
+
+        facidInput.addEventListener('input', () => {
+            facidSearchButton.disabled = facidInput.value.length === 0;
+            // Restrict input to numbers only
+            facidInput.value = facidInput.value.replace(/[^0-9]/g, '').slice(0, 7);
+        });
+
+        // Event listener for the Case Search button
+        caseSearchButton.addEventListener('click', () => {
+            const workgroup = workgroupSelect.value;
+            const caseNumber = caseNumberInput.value;
+            
+            // Pad the case number to 5 digits
+            const paddedCaseNumber = padCaseNumber(caseNumber);
+            
+            // Format the final case number string
+            const formattedCaseNumber = `${workgroup}-${paddedCaseNumber}`;
+            
+            // Construct the final URL
+            const finalURL = caseBaseURL.replace('PLACEHOLDER', formattedCaseNumber);
+            
+            // Load the URL into the iframe
+            resultsIframe.src = finalURL;
+            
+            // Show the browser view
+            showBrowserView();
+        });
+
+        // Event listener for the FACID Search button
+        facidSearchButton.addEventListener('click', () => {
+            const facid = facidInput.value;
+            
+            // Construct the final URL
+            const finalURL = facidBaseURL.replace('@', facid);
+            
+            // Load the URL into the iframe
+            resultsIframe.src = finalURL;
+            
+            // Show the browser view
+            showBrowserView();
+        });
+
+        // Event listener for the "New Search" button
+        newSearchButton.addEventListener('click', () => {
+            // Clear inputs and iframe content
+            caseNumberInput.value = '';
+            workgroupSelect.value = 'UT';
+            facidInput.value = '';
+            resultsIframe.src = 'about:blank'; // Clear iframe content
+            caseSearchButton.disabled = true; // Disable the button
+            facidSearchButton.disabled = true; // Disable the new button
+            
+            // Show the search form view
+            showSearchFormView();
+        });
+    </script>
+
+</body>
+</html>

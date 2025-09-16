@@ -12,9 +12,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        #browser-view {
-            transition: opacity 0.3s ease-in-out;
-        }
         input::placeholder {
             color: #d1d5db; /* A slightly lighter gray for translucency */
             opacity: 0.7;
@@ -56,7 +53,7 @@
                     <!-- Case Number Input -->
                     <div class="flex flex-col">
                         <label for="case-number" class="text-gray-400 text-sm mb-2">Case Number (Max 5 digits)</label>
-                        <input type="number" id="case-number" maxlength="5" placeholder="e.g., 540 (no running zeros needed)" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
+                        <input type="number" id="case-number" maxlength="5" placeholder="e.g., 557 (no leading zeros)" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
                     </div>
 
                     <!-- Search Button -->
@@ -66,7 +63,7 @@
                 </div>
 
                 <!-- FDEP Facility ID Search Section -->
-                <div class="space-y-4 pt-6">
+                <div class="space-y-4 pt-6 border-b border-gray-700 pb-6">
                     <h2 class="text-lg font-semibold text-gray-300">Search FDEP Information Portal ("Nexus Portal"):</h2>
                     <!-- FACID Input -->
                     <div class="flex flex-col">
@@ -78,16 +75,33 @@
                         Search by FACID
                     </button>
                 </div>
+
+                <!-- Property Appraiser Search by Folio Section -->
+                <div class="space-y-4 pt-6">
+                    <h2 class="text-lg font-semibold text-gray-300">Search Property Appraiser by Folio:</h2>
+                    <!-- Folio Input -->
+                    <div class="flex flex-col">
+                        <input type="text" id="folio-input" placeholder="e.g., 04-2028-047-0040 (dashes optional)" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 text-center">
+                    </div>
+                    
+                    <!-- Search Folio Button -->
+                    <button id="folio-search-button" disabled class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Search Folio
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Browser View -->
     <div id="browser-view" class="fixed inset-0 hidden">
-        <iframe id="results-iframe" src="" class="w-full h-full border-none"></iframe>
-        <button id="new-search-button" class="fixed top-4 left-4 bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-semibold shadow-xl hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10">
-            New Search
-        </button>
+        <iframe id="results-iframe" src="" class="w-full h-full border-none relative z-0"></iframe>
+        <div class="fixed top-4 left-4 flex items-center space-x-4">
+            <button id="new-search-button" class="bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-semibold shadow-xl hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10">
+                New Search
+            </button>
+            <span id="generated-url" class="text-xs bg-gray-700 text-gray-300 py-2 px-4 rounded-lg hidden break-all"></span>
+        </div>
     </div>
 
     <div class="mt-12 text-center text-gray-500 text-sm">
@@ -103,12 +117,16 @@
         const caseSearchButton = document.getElementById('case-search-button');
         const facidInput = document.getElementById('facid-input');
         const facidSearchButton = document.getElementById('facid-search-button');
+        const folioInput = document.getElementById('folio-input');
+        const folioSearchButton = document.getElementById('folio-search-button');
         const resultsIframe = document.getElementById('results-iframe');
         const newSearchButton = document.getElementById('new-search-button');
+        const generatedUrlSpan = document.getElementById('generated-url');
 
         // Base URLs for the document searches
         const caseBaseURL = "https://ecmrer.miamidade.gov/document-search?page=1&limit=25&sortOrder=date_desc&searchTerm=&facilityName=&folio=&documentType=&startDate=&endDate=&houseNumber=&streetDirection=&streetName=&streetType=&zipCode=&description=&caseNumber=PLACEHOLDER";
         const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
+        const folioBaseURL = "https://www.miamidade.gov/Apps/PA/propertysearch/#/?folio=@";
 
         // Function to pad the case number with leading zeros
         const padCaseNumber = (num) => String(num).padStart(5, '0');
@@ -135,6 +153,13 @@
             // Restrict input to numbers only
             facidInput.value = facidInput.value.replace(/[^0-9]/g, '').slice(0, 7);
         });
+        
+        folioInput.addEventListener('input', () => {
+            // Remove dashes for button validation
+            const cleanedFolio = folioInput.value.replace(/-/g, '');
+            // Check if the input is a 13-digit number
+            folioSearchButton.disabled = cleanedFolio.length !== 13;
+        });
 
         // Event listener for the Case Search button
         caseSearchButton.addEventListener('click', () => {
@@ -153,6 +178,10 @@
             // Load the URL into the iframe
             resultsIframe.src = finalURL;
             
+            // Display the generated URL
+            generatedUrlSpan.textContent = finalURL;
+            generatedUrlSpan.classList.remove('hidden');
+            
             // Show the browser view
             showBrowserView();
         });
@@ -167,6 +196,28 @@
             // Load the URL into the iframe
             resultsIframe.src = finalURL;
             
+            // Display the generated URL
+            generatedUrlSpan.textContent = finalURL;
+            generatedUrlSpan.classList.remove('hidden');
+            
+            // Show the browser view
+            showBrowserView();
+        });
+        
+        // Event listener for the Folio Search button
+        folioSearchButton.addEventListener('click', () => {
+            const folio = folioInput.value.replace(/-/g, '');
+            
+            // Construct the final URL
+            const finalURL = folioBaseURL.replace('@', folio);
+            
+            // Load the URL into the iframe
+            resultsIframe.src = finalURL;
+            
+            // Display the generated URL
+            generatedUrlSpan.textContent = finalURL;
+            generatedUrlSpan.classList.remove('hidden');
+            
             // Show the browser view
             showBrowserView();
         });
@@ -177,9 +228,17 @@
             caseNumberInput.value = '';
             workgroupSelect.value = 'UT';
             facidInput.value = '';
+            folioInput.value = '';
             resultsIframe.src = 'about:blank'; // Clear iframe content
-            caseSearchButton.disabled = true; // Disable the button
-            facidSearchButton.disabled = true; // Disable the new button
+            
+            // Disable all search buttons
+            caseSearchButton.disabled = true;
+            facidSearchButton.disabled = true;
+            folioSearchButton.disabled = true;
+
+            // Hide the generated URL
+            generatedUrlSpan.textContent = '';
+            generatedUrlSpan.classList.add('hidden');
             
             // Show the search form view
             showSearchFormView();

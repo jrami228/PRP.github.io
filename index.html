@@ -3,49 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Case Search</title>
+    <title>Case Search Portal</title>
+    <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Apply Inter font globally and set dark theme defaults */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d0d0d;
-            color: #ffffff;
-            /* Flex properties removed from body to allow full-screen view */
         }
+        /* Custom styling for inputs */
         input::placeholder {
-            color: #d1d5db; /* A slightly lighter gray for translucency */
+            color: #d1d5db;
             opacity: 0.7;
-        }
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(-25%);
-                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-            }
-            50% {
-                transform: translateY(0);
-                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-            }
         }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
 
-    <!-- Search Form View -->
-    <!-- Centering is now applied directly to this container -->
+    <!-- Search Form View: Vertically and horizontally centered -->
     <div id="search-form-view" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center min-h-screen">
-        <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
-            <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6">Case Search</h1>
+        <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center w-full">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-6 text-yellow-400">Public Records Search</h1>
             
             <div class="space-y-6 w-full max-w-md">
-                <!-- Case Number Search Section -->
+
+                <!-- 1. Case Number Search Section (ECM/CARA) -->
                 <div class="space-y-4 border-b border-gray-700 pb-6">
-                    <h2 class="text-lg font-semibold text-gray-300">Search ECM/CARA:</h2>
+                    <h2 class="text-lg font-semibold text-blue-400">Search ECM/CARA (Case Records):</h2>
+                    
                     <!-- Workgroup Selector -->
                     <div class="flex flex-col">
-                        <label for="workgroup" class="text-gray-400 text-sm mb-2">Workgroup</label>
+                        <label for="workgroup" class="text-gray-400 text-sm mb-2">Workgroup Prefix</label>
                         <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
                             <option value="UT" selected>UT</option>
                             <option value="HWR">HWR</option>
@@ -57,68 +49,104 @@
                     <!-- Case Number Input -->
                     <div class="flex flex-col">
                         <label for="case-number" class="text-gray-400 text-sm mb-2">Case Number (Max 5 digits)</label>
-                        <input type="number" id="case-number" maxlength="5" placeholder="e.g., 557 (no leading zeros)" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
+                        <input type="number" id="case-number" maxlength="5" placeholder="e.g., 557 (no leading zeros)" 
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" 
+                               oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
                     </div>
 
                     <!-- Search Button -->
-                    <button id="case-search-button" disabled class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Search ECM/CARA
+                    <button id="case-search-button" disabled 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
+                                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                   focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                   disabled:opacity-50 disabled:cursor-not-allowed"> 
+                        Search ECM/CARA 
                     </button>
                 </div>
 
-                <!-- FDEP Facility ID Search Section -->
+                <!-- 2. FDEP Facility ID Search Section (Nexus Portal) -->
                 <div class="space-y-4 pt-6 border-b border-gray-700 pb-6">
-                    <h2 class="text-lg font-semibold text-gray-300">Search FDEP Information Portal ("Nexus Portal"):</h2>
+                    <h2 class="text-lg font-semibold text-green-400">Search FDEP Nexus Portal (Facility Documents):</h2>
+
                     <!-- FACID Input -->
                     <div class="flex flex-col">
-                        <input type="text" id="facid-input" maxlength="7" placeholder="7 digit FACID. e.g., 8504110" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
+                        <input type="tel" id="facid-input" maxlength="7" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
                     </div>
-                    
+
                     <!-- Search by FACID Button -->
-                    <button id="facid-search-button" disabled class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Search by FACID
+                    <button id="facid-search-button" disabled 
+                            class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
+                                   hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
+                                   focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                   disabled:opacity-50 disabled:cursor-not-allowed"> 
+                        Search by FACID 
                     </button>
                 </div>
 
-                <!-- Property Appraiser Search by Folio Section -->
+                <!-- 3. Property Appraiser Search by Folio Section -->
                 <div class="space-y-4 pt-6 border-b border-gray-700 pb-6">
-                    <h2 class="text-lg font-semibold text-gray-300">Search Property Appraiser by Folio:</h2>
+                    <h2 class="text-lg font-semibold text-purple-400">Search Property Appraiser by Folio:</h2>
+
                     <!-- Folio Input -->
                     <div class="flex flex-col">
-                        <input type="text" id="folio-input" placeholder="Folio Dashes OPTIONAL" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 text-center">
+                        <input type="text" id="folio-input" inputmode="numeric" placeholder="e.g., 01-1028-147-1010 (dashes optional)" 
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 text-center">
                     </div>
-                    
+
                     <!-- Search Folio Button -->
-                    <button id="folio-search-button" disabled class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Search Folio
+                    <button id="folio-search-button" disabled 
+                            class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
+                                   hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                                   focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                   disabled:opacity-50 disabled:cursor-not-allowed"> 
+                        Search Folio (New Tab)
                     </button>
                 </div>
 
-                <!-- FDEP GIS Layers Button Section -->
+                <!-- 4. FDEP GIS Facility Search Section (Map Direct) - MODIFIED -->
                 <div class="space-y-4 pt-6">
-                    <h2 class="text-lg font-semibold text-gray-300">Search FDEP Map Direct:</h2>
-                    <button id="gis-search-button" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200">
-                        Search by FACID or Address (Top Right of Map)
+                    <h2 class="text-lg font-semibold text-red-400">Search Nearby via Map Direct:</h2>
+
+                    <!-- FACID Input for Map -->
+                    <div class="flex flex-col">
+                        <input type="tel" id="map-facid-input" maxlength="7" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 text-center">
+                    </div>
+
+                    <!-- Search by FACID Button for Map -->
+                    <button id="map-search-button" disabled 
+                            class="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
+                                   hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
+                                   focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                   disabled:opacity-50 disabled:cursor-not-allowed"> 
+                        Find Facility in Map Direct
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- The browser view now takes up the entire viewport -->
+    <!-- Browser View (Hidden by default, fixed full screen) -->
     <div id="browser-view" class="hidden fixed inset-0 z-10">
-        <iframe id="results-iframe" src="" class="w-full h-full border-none relative z-0"></iframe>
-        <div class="fixed top-4 left-4 flex items-center space-x-4 z-20">
-            <button id="new-search-button" class="bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-semibold shadow-xl hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10">
-                New Search
+        <iframe id="results-iframe" src="about:blank" class="w-full h-full border-none relative z-0"></iframe>
+        
+        <!-- Controls for the browser view -->
+        <div class="fixed top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 z-20">
+            <button id="new-search-button" 
+                    class="bg-yellow-400 text-gray-900 py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-bold shadow-xl 
+                           hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 
+                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10 text-sm sm:text-base"> 
+                ← New Search 
             </button>
-            <span id="generated-url" class="text-xs bg-gray-700 text-gray-300 py-2 px-4 rounded-lg hidden break-all"></span>
+            <span id="generated-url" 
+                  class="text-xs bg-gray-700 text-gray-300 py-2 px-4 rounded-lg hidden break-all max-w-xs sm:max-w-md"></span>
         </div>
     </div>
 
-    <div class="mt-12 text-center text-gray-500 text-sm">
-        -jr
-    </div>
+    <!-- Footer -->
+    <div class="mt-12 text-center text-gray-500 text-sm absolute bottom-4 left-0 right-0"> -jr </div>
 
     <script>
         // Get DOM elements
@@ -131,7 +159,12 @@
         const facidSearchButton = document.getElementById('facid-search-button');
         const folioInput = document.getElementById('folio-input');
         const folioSearchButton = document.getElementById('folio-search-button');
-        const gisSearchButton = document.getElementById('gis-search-button');
+        
+        // NEW: Map Search elements
+        const mapFacidInput = document.getElementById('map-facid-input');
+        const mapSearchButton = document.getElementById('map-search-button');
+        // Removed gisSearchButton reference as it's no longer a direct button
+
         const resultsIframe = document.getElementById('results-iframe');
         const newSearchButton = document.getElementById('new-search-button');
         const generatedUrlSpan = document.getElementById('generated-url');
@@ -140,8 +173,8 @@
         const caseBaseURL = "https://ecmrer.miamidade.gov/document-search?page=1&limit=25&sortOrder=date_desc&searchTerm=&facilityName=&folio=&documentType=&startDate=&endDate=&houseNumber=&streetDirection=&streetName=&streetType=&zipCode=&description=&caseNumber=PLACEHOLDER";
         const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
         const folioBaseURL = "https://www.miamidade.gov/Apps/PA/propertysearch/#/?folio=@";
-        const gisBaseURL = "https://ca.dep.state.fl.us/mapdirect/?map=1fe2d2fddc6a4fc7b0cc046f38812d65";
-
+        // Removed old gisBaseURL. New URL for Map Direct search:
+        const mapBaseURL = "https://ca.dep.state.fl.us/mapdirect/?focus=stortanks&zoom=query&querytype=stcm&queryvalues=@";
 
         // Function to pad the case number with leading zeros
         const padCaseNumber = (num) => String(num).padStart(5, '0');
@@ -158,120 +191,104 @@
             searchFormView.classList.remove('hidden');
         };
 
-        // Event listeners for the input fields to enable/disable their respective search buttons
+        // --- Input Validation and Button Enabling ---
+
+        // Case Number Validation
         caseNumberInput.addEventListener('input', () => {
             caseSearchButton.disabled = caseNumberInput.value.length === 0;
         });
 
+        // FACID Validation and Cleanup
         facidInput.addEventListener('input', () => {
-            facidSearchButton.disabled = facidInput.value.length === 0;
-            // Restrict input to numbers only
             facidInput.value = facidInput.value.replace(/[^0-9]/g, '').slice(0, 7);
-        });
-        
-        folioInput.addEventListener('input', () => {
-            // Remove dashes for button validation
-            const cleanedFolio = folioInput.value.replace(/-/g, '');
-            // Check if the input is a 13-digit number
-            folioSearchButton.disabled = cleanedFolio.length !== 13;
+            facidSearchButton.disabled = facidInput.value.length !== 7;
         });
 
-        // Event listener for the Case Search button
+        // Folio Validation and Cleanup
+        folioInput.addEventListener('input', () => {
+            const cleanedFolio = folioInput.value.replace(/-/g, '');
+            folioSearchButton.disabled = !/^\d{13}$/.test(cleanedFolio);
+        });
+
+        // NEW: Map FACID Validation and Cleanup
+        mapFacidInput.addEventListener('input', () => {
+            mapFacidInput.value = mapFacidInput.value.replace(/[^0-9]/g, '').slice(0, 7);
+            mapSearchButton.disabled = mapFacidInput.value.length !== 7;
+        });
+
+        // --- Search Button Click Handlers ---
+
+        // 1. Case Search Handler (Loads in iframe)
         caseSearchButton.addEventListener('click', () => {
             const workgroup = workgroupSelect.value;
             const caseNumber = caseNumberInput.value;
-            
-            // Pad the case number to 5 digits
             const paddedCaseNumber = padCaseNumber(caseNumber);
-            
-            // Format the final case number string
             const formattedCaseNumber = `${workgroup}-${paddedCaseNumber}`;
-            
-            // Construct the final URL
             const finalURL = caseBaseURL.replace('PLACEHOLDER', formattedCaseNumber);
-            
-            // Load the URL into the iframe
+
             resultsIframe.src = finalURL;
-            
-            // Display the generated URL
             generatedUrlSpan.textContent = finalURL;
             generatedUrlSpan.classList.remove('hidden');
-            
-            // Show the browser view
             showBrowserView();
         });
 
-        // Event listener for the FACID Search button
+        // 2. FACID Search Handler (Loads in iframe)
         facidSearchButton.addEventListener('click', () => {
             const facid = facidInput.value;
-            
-            // Construct the final URL
             const finalURL = facidBaseURL.replace('@', facid);
-            
-            // Load the URL into the iframe
+
             resultsIframe.src = finalURL;
-            
-            // Display the generated URL
             generatedUrlSpan.textContent = finalURL;
             generatedUrlSpan.classList.remove('hidden');
-            
-            // Show the browser view
             showBrowserView();
         });
-        
-        // Event listener for the Folio Search button
+
+        // 3. Folio Search Handler (Opens in new tab)
         folioSearchButton.addEventListener('click', () => {
             const folio = folioInput.value.replace(/-/g, '');
-            
-            // Construct the final URL
             const finalURL = folioBaseURL.replace('@', folio);
-            
+
+            window.open(finalURL, '_blank');
+            generatedUrlSpan.textContent = finalURL;
+            generatedUrlSpan.classList.remove('hidden');
+        });
+
+        // NEW: 4. Map Search Handler (Opens in new tab)
+        mapSearchButton.addEventListener('click', () => {
+            const facid = mapFacidInput.value;
+            const finalURL = mapBaseURL.replace('@', facid);
+
             // Open the URL in a new tab
             window.open(finalURL, '_blank');
             
-            // Display the generated URL
+            // Display the generated URL (optional)
             generatedUrlSpan.textContent = finalURL;
             generatedUrlSpan.classList.remove('hidden');
-            
-            // Show the browser view
-            showBrowserView();
         });
 
-        // Event listener for the GIS Layers Search button
-        gisSearchButton.addEventListener('click', () => {
-            // Open the GIS Layers URL in a new tab
-            window.open(gisBaseURL, '_blank');
-            
-            // Display the generated URL
-            generatedUrlSpan.textContent = gisBaseURL;
-            generatedUrlSpan.classList.remove('hidden');
-            
-            // Show the browser view
-            showBrowserView();
-        });
-
-        // Event listener for the "New Search" button
+        // --- New Search Button Handler ---
         newSearchButton.addEventListener('click', () => {
             // Clear inputs and iframe content
             caseNumberInput.value = '';
             workgroupSelect.value = 'UT';
             facidInput.value = '';
             folioInput.value = '';
-            resultsIframe.src = 'about:blank'; // Clear iframe content
-            
-            // Disable all search buttons
+            mapFacidInput.value = ''; // NEW: Clear the new map input
+            resultsIframe.src = 'about:blank'; 
+
+            // Disable all search buttons (matching initial state)
             caseSearchButton.disabled = true;
             facidSearchButton.disabled = true;
             folioSearchButton.disabled = true;
+            mapSearchButton.disabled = true; // NEW: Disable the new map button
 
             // Hide the generated URL
             generatedUrlSpan.textContent = '';
             generatedUrlSpan.classList.add('hidden');
-            
+
             // Show the search form view
             showSearchFormView();
         });
     </script>
-
 </body>
 </html>

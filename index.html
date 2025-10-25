@@ -116,7 +116,7 @@
                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
-                                Search Folio
+                                Search Folio (New Tab)
                             </button>
                         </div>
 
@@ -132,7 +132,7 @@
                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
-                                Search Address
+                                Search Address (2 Tabs)
                             </button>
                         </div>
                     </div>
@@ -187,7 +187,7 @@
                 <button id="transfer-folio-button" disabled 
                         class="bg-purple-600 text-white py-2 px-3 rounded-lg font-bold text-sm 
                                hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"> 
-                    Search Folio
+                    Search Folio (New Tab)
                 </button>
             </div>
             
@@ -198,9 +198,14 @@
                 <button id="transfer-address-button" disabled 
                         class="bg-purple-600 text-white py-2 px-3 rounded-lg font-bold text-sm 
                                hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"> 
-                    Search Address
+                    Search Address (2 Tabs)
                 </button>
             </div>
+            
+            <span id="popup-warning" class="text-sm font-semibold text-red-400 bg-gray-800 p-2 rounded-lg hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.398 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                Check pop-up blocker if only one tab opened!
+            </span>
 
             <span id="generated-url" 
                   class="text-xs bg-gray-700 text-gray-300 py-2 px-4 rounded-lg hidden break-all max-w-xs sm:max-w-md"></span>
@@ -214,13 +219,14 @@
         const resultsIframe = document.getElementById('results-iframe');
         const newSearchButton = document.getElementById('new-search-button');
         const generatedUrlSpan = document.getElementById('generated-url');
-        
+        const popupWarning = document.getElementById('popup-warning'); // NEW
+
         // Folio Transfer Elements
         const folioTransferControls = document.getElementById('folio-transfer-controls');
         const folioTransferInput = document.getElementById('folio-transfer-input');
-        const transferFolioButton = document.getElementById('transfer-folio-button'); // Renamed ID
+        const transferFolioButton = document.getElementById('transfer-folio-button');
         
-        // NEW Address Transfer Elements
+        // Address Transfer Elements
         const addressTransferControls = document.getElementById('address-transfer-controls');
         const addressTransferInput = document.getElementById('address-transfer-input');
         const transferAddressButton = document.getElementById('transfer-address-button');
@@ -251,6 +257,7 @@
         const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
         const folioBaseURL = "https://www.miamidade.gov/Apps/PA/propertysearch/#/?folio=@";
         const addressBaseURL = "https://apps.miamidadepa.gov/PropertySearch/#/?address=@";
+        const environmentalBaseURL = "https://gisweb.miamidade.gov/environmentalconsiderations/?searchtype=address&paramvalue=@";
         const mapBaseURL = "https://ca.dep.state.fl.us/mapdirect/?focus=stortanks&zoom=query&querytype=stcm&queryvalues=@";
 
         // === Utility Functions ===
@@ -258,15 +265,46 @@
         const padCaseNumber = (num) => String(num).padStart(5, '0');
         const cleanFacidInput = (input) => input.value.replace(/[^0-9]/g, '').slice(0, 7);
 
+        // Unified Address Search function to open both tabs
+        const performAddressSearch = (address, isTransferSearch = false) => {
+            const encodedAddress = encodeURIComponent(address.trim()); 
+            
+            // 1st Tab: Property Appraiser
+            const finalURL_PA = addressBaseURL.replace('@', encodedAddress);
+            const w1 = window.open(finalURL_PA, '_blank');
+            
+            // 2nd Tab: Environmental Considerations GIS
+            const finalURL_EC = environmentalBaseURL.replace('@', encodedAddress);
+            const w2 = window.open(finalURL_EC, '_blank');
+
+            // Show pop-up warning if either window failed to open
+            if (!w1 || !w2) {
+                popupWarning.classList.remove('hidden');
+            } else {
+                popupWarning.classList.add('hidden');
+            }
+
+            if (isTransferSearch) {
+                addressTransferInput.value = '';
+                transferAddressButton.disabled = true;
+            } else {
+                generatedUrlSpan.textContent = `PA: ${finalURL_PA} | EC: ${finalURL_EC}`;
+                generatedUrlSpan.classList.remove('hidden');
+                folioTransferControls.classList.add('hidden');
+                addressTransferControls.classList.add('hidden');
+            }
+        }
+
         // Function to show the browser view and manage URL display
         const showBrowserView = (url) => {
             generatedUrlSpan.textContent = url;
             generatedUrlSpan.classList.remove('hidden');
             searchFormView.classList.add('hidden');
             browserView.classList.remove('hidden');
+            popupWarning.classList.add('hidden'); // Clear warning on new search
         };
 
-        // Function to open in a new tab
+        // Function to open in a new tab (only opens one for this app's logic)
         const openInNewTab = (url) => {
             window.open(url, '_blank');
             generatedUrlSpan.textContent = url;
@@ -274,6 +312,7 @@
             // Hide all controls if a non-iframe search opened a tab
             folioTransferControls.classList.add('hidden');
             addressTransferControls.classList.add('hidden');
+            popupWarning.classList.add('hidden'); // Clear warning on new search
         };
 
         // === Input Event Listeners for Validation and Cleanup ===
@@ -348,19 +387,16 @@
             folioTransferControls.classList.add('hidden');
         });
 
-        // 3. Folio Search Handler (Opens new tab) - Main Page
+        // 3. Folio Search Handler (Opens single new tab) - Main Page
         folioSearchButton.addEventListener('click', () => {
             const folio = folioInput.value.replace(/[^0-9]/g, '');
             const finalURL = folioBaseURL.replace('@', folio);
             openInNewTab(finalURL);
         });
         
-        // 4. Address Search Handler (Opens new tab) - Main Page
+        // 4. Address Search Handler (Opens two new tabs) - Main Page
         addressSearchButton.addEventListener('click', () => {
-            const address = addressInput.value.trim();
-            const encodedAddress = encodeURIComponent(address); 
-            const finalURL = addressBaseURL.replace('@', encodedAddress);
-            openInNewTab(finalURL);
+            performAddressSearch(addressInput.value, false);
         });
 
         // 5. Map Search Handler (Opens new tab)
@@ -377,16 +413,12 @@
             window.open(finalURL, '_blank');
             folioTransferInput.value = '';
             transferFolioButton.disabled = true;
+            popupWarning.classList.add('hidden');
         });
         
-        // 7. Address Transfer Search Handler - Browser View (NEW)
+        // 7. Address Transfer Search Handler - Browser View (Opens two new tabs)
         transferAddressButton.addEventListener('click', () => {
-            const address = addressTransferInput.value.trim();
-            const encodedAddress = encodeURIComponent(address);
-            const finalURL = addressBaseURL.replace('@', encodedAddress);
-            window.open(finalURL, '_blank');
-            addressTransferInput.value = '';
-            transferAddressButton.disabled = true;
+            performAddressSearch(addressTransferInput.value, true);
         });
 
 
@@ -400,7 +432,7 @@
             addressInput.value = '';
             mapFacidInput.value = '';
             folioTransferInput.value = '';
-            addressTransferInput.value = ''; // Clear new transfer input
+            addressTransferInput.value = '';
 
             // Disable all search buttons
             caseSearchButton.disabled = true;
@@ -409,7 +441,7 @@
             addressSearchButton.disabled = true;
             mapSearchButton.disabled = true;
             transferFolioButton.disabled = true;
-            transferAddressButton.disabled = true; // Disable new transfer button
+            transferAddressButton.disabled = true;
 
             // Clear and hide the generated URL and ALL Transfer boxes
             resultsIframe.src = 'about:blank';
@@ -417,6 +449,7 @@
             generatedUrlSpan.classList.add('hidden');
             folioTransferControls.classList.add('hidden');
             addressTransferControls.classList.add('hidden');
+            popupWarning.classList.add('hidden'); // Clear warning
 
             // Show the search form view
             browserView.classList.add('hidden');

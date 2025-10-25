@@ -37,7 +37,7 @@
                     
                     <!-- Workgroup Selector -->
                     <div class="flex flex-col">
-                        <label for="workgroup" class="text-gray-400 text-sm mb-2">Workgroup Prefix</label>
+                        <label for="workgroup" class="text-gray-400 text-sm mb-2">Workgroup </label>
                         <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
                             <option value="UT" selected>UT</option>
                             <option value="HWR">HWR</option>
@@ -48,7 +48,7 @@
 
                     <!-- Case Number Input -->
                     <div class="flex flex-col">
-                        <label for="case-number" class="text-gray-400 text-sm mb-2">Case Number (Max 5 digits)</label>
+                        <label for="case-number" class="text-gray-400 text-sm mb-2">Work Group Number: </label>
                         <input type="number" id="case-number" maxlength="5" placeholder="e.g., 557 (no leading zeros)" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" 
                                oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
@@ -106,7 +106,7 @@
 
                 <!-- 4. FDEP GIS Facility Search Section (Map Direct) - MODIFIED -->
                 <div class="space-y-4 pt-6">
-                    <h2 class="text-lg font-semibold text-red-400">Search Facility via FDEP Map Direct:</h2>
+                    <h2 class="text-lg font-semibold text-red-400">Search FDEP STCM GIS Layer in Map Direct:</h2>
 
                     <!-- FACID Input for Map -->
                     <div class="flex flex-col">

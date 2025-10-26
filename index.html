@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Records Search Portal</title>
-    <!-- Inter Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Inter Font --><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Apply Inter font globally and set dark theme defaults */
         body {
@@ -24,24 +22,23 @@
 </head>
 <body class="bg-gray-900 text-white p-4">
 
-    <!-- Search Form View: Vertically and horizontally centered -->
-    <div id="search-form-view" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center min-h-screen py-8">
+    <!-- Search Form View: Vertically and horizontally centered --><div id="search-form-view" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center min-h-screen py-8">
         <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center w-full">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-yellow-400">Public Records Search</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-yellow-400">
+                Public Records Search
+            </h1>
             
             <div class="space-y-8 w-full max-w-md">
 
-                <!-- 1. Case Number Search Section (ECM/CARA) -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 1. Case Number Search Section (ECM/CARA) --><div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-blue-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-9 0V3h4m-4 2h4m-2 2h2m-6 0v2m0 4v2m0 4v2m4-10h2m0 4h2m0 4h2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-9 0V3h4m-4 2h4m-2 2h2m-6 0v2m0 4v2m0 4v2m4-10h2m0 4h2m0 4h2" />
                         </svg>
                         Search ECM/CARA Case
                     </h2>
                     
-                    <!-- Workgroup Selector -->
-                    <div class="flex flex-col">
+                    <!-- Workgroup Selector --><div class="flex flex-col">
                         <label for="workgroup" class="text-gray-400 text-sm mb-2">Work Group </label>
                         <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
                             <option value="UT" selected>UT</option>
@@ -51,61 +48,54 @@
                         </select>
                     </div>
 
-                    <!-- Case Number Input -->
-                    <div class="flex flex-col">
+                    <!-- Case Number Input --><div class="flex flex-col">
                         <label for="case-number" class="text-gray-400 text-sm mb-2">Work Group Number</label>
                         <input type="number" id="case-number" placeholder="e.g., 557 (no leading zeros)" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" 
                                oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
                     </div>
 
-                    <!-- Search Button -->
-                    <button id="case-search-button" disabled 
+                    <!-- Search Button --><button id="case-search-button" disabled 
                                 class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                        hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search ECM/CARA
                     </button>
                 </div>
 
-                <!-- 2. FDEP Facility ID Search Section (Nexus Portal) -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 2. FDEP Facility ID Search Section (Nexus Portal) --><div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-green-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Search FDEP Information Portal
                     </h2>
 
-                    <!-- FACID Input -->
-                    <div class="flex flex-col">
+                    <!-- FACID Input --><div class="flex flex-col">
                         <input type="tel" id="facid-input" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
                     </div>
 
-                    <!-- Search by FACID Button -->
-                    <button id="facid-search-button" disabled 
+                    <!-- Search by FACID Button --><button id="facid-search-button" disabled 
                                 class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                       hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
-                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
+                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search by FACID
                     </button>
                 </div>
 
-                <!-- 3. Property Appraiser Search Section (Folio & Address) -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 3. Property Appraiser Search Section (Folio & Address) --><div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-purple-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                         Property Appraiser Search 
                     </h2>
 
                     <div class="space-y-6">
-                        <!-- Folio Search Block -->
-                        <div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
+                        <!-- Folio Search Block --><div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
                             <h3 class="text-lg font-semibold text-purple-300">Search by Folio Number:</h3>
                             <div class="flex flex-col">
                                 <input type="text" id="folio-input" placeholder="e.g., 01-1028-147-1010 (dashes optional)" 
@@ -113,15 +103,14 @@
                             </div>
                             <button id="folio-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                           hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
-                                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                           disabled:opacity-50 disabled:cursor-not-allowed"> 
-                                Search Folio (New Tab)
+                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                Search Folio
                             </button>
                         </div>
 
-                        <!-- Address Search Block -->
-                        <div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
+                        <!-- Address Search Block --><div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
                             <h3 class="text-lg font-semibold text-purple-300">Search by Address:</h3>
                             <div class="flex flex-col">
                                 <input type="text" id="address-input" placeholder="e.g., 2735 NW 7TH ST" 
@@ -129,36 +118,33 @@
                             </div>
                             <button id="address-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                           hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
-                                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                           disabled:opacity-50 disabled:cursor-not-allowed"> 
-                                Search Address (2 Tabs)
+                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                Search Address
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. FDEP GIS Facility Search Section (Map Direct) -->
-                <div class="space-y-4 pt-6">
+                <!-- 4. FDEP GIS Facility Search Section (Map Direct) --><div class="space-y-4 pt-6">
                     <h2 class="text-xl font-bold text-red-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243m10.606 0a2 2 0 110-2 2 2 0 010 2zm-8 2a2 2 0 110-2 2 2 0 010 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243m10.606 0a2 2 0 110-2 2 2 0 010 2zm-8 2a2 2 0 110-2 2 2 0 010 2z" />
                         </svg>
                         Search FDEP STCM GIS Layer
                     </h2>
 
-                    <!-- FACID Input for Map -->
-                    <div class="flex flex-col">
+                    <!-- FACID Input for Map --><div class="flex flex-col">
                         <input type="tel" id="map-facid-input" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 text-center">
                     </div>
 
-                    <!-- Search by FACID Button for Map -->
-                    <button id="map-search-button" disabled 
+                    <!-- Search by FACID Button for Map --><button id="map-search-button" disabled 
                                 class="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                       hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
-                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                        hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
+                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search STCM GIS Layer
                     </button>
                 </div>
@@ -167,12 +153,10 @@
         </div>
     </div>
 
-    <!-- Browser View (Hidden by default, fixed full screen) -->
-    <div id="browser-view" class="hidden fixed inset-0 z-10">
-        <iframe id="results-iframe" src="about:blank" class="w-full h-full border-none relative z-0"></iframe>
+    <!-- Browser View (Hidden by default, fixed full screen) --><div id="browser-view" class="hidden fixed inset-0 z-10">
+        <iframe id="results-iframe" src="about:blank" class="w-full h-full border-none relative z-0" loading="lazy"></iframe>
         
-        <!-- Controls for the browser view -->
-        <div class="fixed top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 z-20">
+        <!-- Controls for the browser view --><div class="fixed top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 z-20">
             <button id="new-search-button" 
                     class="bg-yellow-400 text-gray-900 py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-bold shadow-xl 
                            hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 
@@ -180,35 +164,35 @@
                 ← New Search 
             </button>
 
-            <!-- Folio Transfer Controls (SHOWS AFTER ECM CASE SEARCH) -->
-            <div id="folio-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
+            <!-- Copy Link Button --><button id="copy-link-button"
+                    class="bg-orange-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-bold shadow-xl 
+                           hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 
+                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10 
+                           text-sm sm:text-base hidden">
+                Copy Page Link
+            </button>
+
+            <!-- Folio Transfer Controls (SHOWS AFTER ECM CASE SEARCH) --><div id="folio-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
                 <input type="text" id="folio-transfer-input" placeholder="Paste Folio from results..." 
                        class="bg-gray-800 text-white py-2 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 w-40 sm:w-60" />
                 <button id="transfer-folio-button" disabled 
                         class="bg-purple-600 text-white py-2 px-3 rounded-lg font-bold text-sm 
                                hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"> 
-                    Search Folio (New Tab)
+                    Search Folio
                 </button>
             </div>
             
-            <!-- Address Transfer Controls (SHOWS AFTER FDEP NEXUS SEARCH) -->
-            <div id="address-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
-                <input type="text" id="address-transfer-input" placeholder="Paste Address from documents..." 
+            <!-- Address Transfer Controls (SHOWS AFTER FDEP NEXUS SEARCH) --><div id="address-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
+                <input type="text" id="address-transfer-input" placeholder="Paste address from results" 
                        class="bg-gray-800 text-white py-2 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 w-40 sm:w-60" />
                 <button id="transfer-address-button" disabled 
                         class="bg-purple-600 text-white py-2 px-3 rounded-lg font-bold text-sm 
                                hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"> 
-                    Search Address (2 Tabs)
+                    Search Address
                 </button>
             </div>
-            
-            <span id="popup-warning" class="text-sm font-semibold text-red-400 bg-gray-800 p-2 rounded-lg hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.398 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                Check pop-up blocker if only one tab opened!
-            </span>
 
-            <span id="generated-url" 
-                  class="text-xs bg-gray-700 text-gray-300 py-2 px-4 rounded-lg hidden break-all max-w-xs sm:max-w-md"></span>
+            <!-- The old generated-url span is now always hidden as its functionality is replaced by the button --><span id="generated-url" class="hidden"></span> 
         </div>
     </div>
     
@@ -218,13 +202,13 @@
         const browserView = document.getElementById('browser-view');
         const resultsIframe = document.getElementById('results-iframe');
         const newSearchButton = document.getElementById('new-search-button');
-        const generatedUrlSpan = document.getElementById('generated-url');
-        const popupWarning = document.getElementById('popup-warning'); // NEW
-
+        const generatedUrlSpan = document.getElementById('generated-url'); // Still exists but is always hidden
+        const copyLinkButton = document.getElementById('copy-link-button'); 
+        
         // Folio Transfer Elements
         const folioTransferControls = document.getElementById('folio-transfer-controls');
         const folioTransferInput = document.getElementById('folio-transfer-input');
-        const transferFolioButton = document.getElementById('transfer-folio-button');
+        const transferFolioButton = document.getElementById('transfer-folio-button'); 
         
         // Address Transfer Elements
         const addressTransferControls = document.getElementById('address-transfer-controls');
@@ -257,7 +241,6 @@
         const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
         const folioBaseURL = "https://www.miamidade.gov/Apps/PA/propertysearch/#/?folio=@";
         const addressBaseURL = "https://apps.miamidadepa.gov/PropertySearch/#/?address=@";
-        const environmentalBaseURL = "https://gisweb.miamidade.gov/environmentalconsiderations/?searchtype=address&paramvalue=@";
         const mapBaseURL = "https://ca.dep.state.fl.us/mapdirect/?focus=stortanks&zoom=query&querytype=stcm&queryvalues=@";
 
         // === Utility Functions ===
@@ -265,54 +248,34 @@
         const padCaseNumber = (num) => String(num).padStart(5, '0');
         const cleanFacidInput = (input) => input.value.replace(/[^0-9]/g, '').slice(0, 7);
 
-        // Unified Address Search function to open both tabs
-        const performAddressSearch = (address, isTransferSearch = false) => {
-            const encodedAddress = encodeURIComponent(address.trim()); 
-            
-            // 1st Tab: Property Appraiser
-            const finalURL_PA = addressBaseURL.replace('@', encodedAddress);
-            const w1 = window.open(finalURL_PA, '_blank');
-            
-            // 2nd Tab: Environmental Considerations GIS
-            const finalURL_EC = environmentalBaseURL.replace('@', encodedAddress);
-            const w2 = window.open(finalURL_EC, '_blank');
-
-            // Show pop-up warning if either window failed to open
-            if (!w1 || !w2) {
-                popupWarning.classList.remove('hidden');
-            } else {
-                popupWarning.classList.add('hidden');
-            }
-
-            if (isTransferSearch) {
-                addressTransferInput.value = '';
-                transferAddressButton.disabled = true;
-            } else {
-                generatedUrlSpan.textContent = `PA: ${finalURL_PA} | EC: ${finalURL_EC}`;
-                generatedUrlSpan.classList.remove('hidden');
-                folioTransferControls.classList.add('hidden');
-                addressTransferControls.classList.add('hidden');
-            }
-        }
+        const cleanAddressOrdinals = (address) => {
+            if (!address) return '';
+            // Removes ordinal indicators (st, nd, rd, th) from numbers
+            // e.g., "7TH ST" -> "7 ST", "1ST AVE" -> "1 AVE"
+            // Uses a case-insensitive regex with a word boundary
+            return address.replace(/(\d+)(ST|ND|RD|TH)\b/gi, '$1');
+        };
 
         // Function to show the browser view and manage URL display
         const showBrowserView = (url) => {
-            generatedUrlSpan.textContent = url;
-            generatedUrlSpan.classList.remove('hidden');
             searchFormView.classList.add('hidden');
             browserView.classList.remove('hidden');
-            popupWarning.classList.add('hidden'); // Clear warning on new search
+
+            copyLinkButton.dataset.url = url; // Store the URL on the button
+            copyLinkButton.classList.remove('hidden'); // Show the copy button
+            
+            // Ensure the span is always hidden as it's no longer used for display
+            generatedUrlSpan.classList.add('hidden'); 
         };
 
-        // Function to open in a new tab (only opens one for this app's logic)
+        // Function to open in a new tab
         const openInNewTab = (url) => {
             window.open(url, '_blank');
-            generatedUrlSpan.textContent = url;
-            generatedUrlSpan.classList.remove('hidden');
-            // Hide all controls if a non-iframe search opened a tab
+            // When opening in a new tab, hide the copy button as it's not relevant for the current iframe view
+            copyLinkButton.classList.add('hidden'); 
+            // Also hide transfer controls as the user is likely navigating away
             folioTransferControls.classList.add('hidden');
             addressTransferControls.classList.add('hidden');
-            popupWarning.classList.add('hidden'); // Clear warning on new search
         };
 
         // === Input Event Listeners for Validation and Cleanup ===
@@ -368,7 +331,8 @@
             const formattedCaseNumber = `${workgroup}-${padCaseNumber(caseNumber)}`; 
             const finalURL = caseBaseURL.replace('PLACEHOLDER', formattedCaseNumber);
             resultsIframe.src = finalURL;
-            showBrowserView(finalURL);
+            
+            showBrowserView(finalURL); // Now handles showing copy button
             
             // Show Folio controls, Hide Address controls
             folioTransferControls.classList.remove('hidden');
@@ -380,23 +344,28 @@
             const facid = facidInput.value;
             const finalURL = facidBaseURL.replace('@', facid);
             resultsIframe.src = finalURL;
-            showBrowserView(finalURL);
+            
+            showBrowserView(finalURL); // Now handles showing copy button
 
             // Show Address controls, Hide Folio controls
             addressTransferControls.classList.remove('hidden');
             folioTransferControls.classList.add('hidden');
         });
 
-        // 3. Folio Search Handler (Opens single new tab) - Main Page
+        // 3. Folio Search Handler (Opens new tab) - Main Page
         folioSearchButton.addEventListener('click', () => {
             const folio = folioInput.value.replace(/[^0-9]/g, '');
             const finalURL = folioBaseURL.replace('@', folio);
             openInNewTab(finalURL);
         });
         
-        // 4. Address Search Handler (Opens two new tabs) - Main Page
+        // 4. Address Search Handler (Opens new tab) - Main Page
         addressSearchButton.addEventListener('click', () => {
-            performAddressSearch(addressInput.value, false);
+            const rawAddress = addressInput.value.trim();
+            const cleanedAddress = cleanAddressOrdinals(rawAddress); 
+            const encodedAddress = encodeURIComponent(cleanedAddress); 
+            const finalURL = addressBaseURL.replace('@', encodedAddress);
+            openInNewTab(finalURL);
         });
 
         // 5. Map Search Handler (Opens new tab)
@@ -413,12 +382,48 @@
             window.open(finalURL, '_blank');
             folioTransferInput.value = '';
             transferFolioButton.disabled = true;
-            popupWarning.classList.add('hidden');
         });
         
-        // 7. Address Transfer Search Handler - Browser View (Opens two new tabs)
+        // 7. Address Transfer Search Handler - Browser View
         transferAddressButton.addEventListener('click', () => {
-            performAddressSearch(addressTransferInput.value, true);
+            const rawAddress = addressTransferInput.value.trim();
+            const cleanedAddress = cleanAddressOrdinals(rawAddress); 
+            const encodedAddress = encodeURIComponent(cleanedAddress);
+            const finalURL = addressBaseURL.replace('@', encodedAddress);
+            window.open(finalURL, '_blank');
+            addressTransferInput.value = '';
+            transferAddressButton.disabled = true;
+        });
+
+        // Event Listener for the Copy Link Button
+        copyLinkButton.addEventListener('click', () => {
+            const urlToCopy = copyLinkButton.dataset.url;
+            if (!urlToCopy) return;
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = urlToCopy;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.top = '-9999px';
+            tempTextarea.style.left = '-9999px';
+            
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            
+            try {
+                document.execCommand('copy');
+                copyLinkButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyLinkButton.textContent = 'Copy Page Link';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy link: ', err);
+                copyLinkButton.textContent = 'Failed to Copy';
+                setTimeout(() => {
+                    copyLinkButton.textContent = 'Copy Page Link';
+                }, 2000);
+            }
+
+            document.body.removeChild(tempTextarea);
         });
 
 
@@ -432,7 +437,7 @@
             addressInput.value = '';
             mapFacidInput.value = '';
             folioTransferInput.value = '';
-            addressTransferInput.value = '';
+            addressTransferInput.value = ''; 
 
             // Disable all search buttons
             caseSearchButton.disabled = true;
@@ -441,15 +446,17 @@
             addressSearchButton.disabled = true;
             mapSearchButton.disabled = true;
             transferFolioButton.disabled = true;
-            transferAddressButton.disabled = true;
+            transferAddressButton.disabled = true; 
 
-            // Clear and hide the generated URL and ALL Transfer boxes
+            // Clear and hide the iframe and transfer controls
             resultsIframe.src = 'about:blank';
-            generatedUrlSpan.textContent = '';
-            generatedUrlSpan.classList.add('hidden');
             folioTransferControls.classList.add('hidden');
             addressTransferControls.classList.add('hidden');
-            popupWarning.classList.add('hidden'); // Clear warning
+
+            // Hide and reset the copy link button
+            copyLinkButton.classList.add('hidden');
+            copyLinkButton.textContent = 'Copy Page Link';
+            copyLinkButton.dataset.url = '';
 
             // Show the search form view
             browserView.classList.add('hidden');
@@ -458,3 +465,4 @@
     </script>
 </body>
 </html>
+

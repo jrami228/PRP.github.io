@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Records Search Portal</title>
-    <!-- Inter Font --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Apply Inter font globally and set dark theme defaults */
         body {
@@ -18,11 +20,25 @@
             color: #9ca3af; /* Gray-400 */
             opacity: 0.8;
         }
+
+        /* Remove arrows/spinners from number inputs */
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
 
-    <!-- Search Form View: Vertically and horizontally centered --><div id="search-form-view" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center min-h-screen py-8">
+    <!-- Search Form View: Vertically and horizontally centered -->
+    <div id="search-form-view" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center min-h-screen py-8">
         <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center w-full">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-yellow-400">
                 Public Records Search
@@ -30,15 +46,27 @@
             
             <div class="space-y-8 w-full max-w-md">
 
-                <!-- 1. Case Number Search Section (ECM/CARA) --><div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 1. Case Number Search Section (ECM/CARA) -->
+                <div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-blue-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-9 0V3h4m-4 2h4m-2 2h2m-6 0v2m0 4v2m0 4v2m4-10h2m0 4h2m0 4h2" />
                         </svg>
                         Search DERM/RER Records
+
+                        <!-- Info Tooltip -->
+                        <div class="relative group ml-2 cursor-help">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed">
+                                Use this option to search the DERM/RER Public Records at https://ecmrer.miamidade.gov/
+                            </div>
+                        </div>
                     </h2>
                     
-                    <!-- Workgroup Selector --><div class="flex flex-col">
+                    <!-- Workgroup Selector -->
+                    <div class="flex flex-col">
                         <label for="workgroup" class="text-gray-400 text-sm mb-2">Work Group </label>
                         <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
                             <option value="UT" selected>UT</option>
@@ -48,45 +76,78 @@
                         </select>
                     </div>
 
-                    <!-- Case Number Input --><div class="flex flex-col">
+                    <!-- Case Number Input -->
+                    <div class="flex flex-col">
                         <label for="case-number" class="text-gray-400 text-sm mb-2">Work Group Number</label>
                         <input type="number" id="case-number" placeholder="e.g., 557 (no leading zeros)" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center" 
                                oninput="if(this.value.length > 5) this.value=this.value.slice(0,5)">
                     </div>
 
-                    <!-- Search Button --><button id="case-search-button" disabled 
+                    <!-- Search Button -->
+                    <button id="case-search-button" disabled 
                                 class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                        hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search ECM/CARA
                     </button>
                 </div>
 
-                <!-- 2. FDEP Facility ID Search Section (Nexus Portal) --><div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 2. FDEP Facility ID Search Section (Nexus Portal) -->
+                <div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-green-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Search FDEP Information Portal
+
+                        <!-- Info Tooltip (Green) -->
+                        <div class="relative group ml-2 cursor-help">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed">
+                                Use this option to search the FDEP Information Portal for an FDEP FACID or for an FDEP ERIC ID at https://prodenv.dep.state.fl.us/DepNexus/
+                            </div>
+                        </div>
                     </h2>
 
-                    <!-- FACID Input --><div class="flex flex-col">
-                        <input type="tel" id="facid-input" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
+                    <!-- FACID Input -->
+                    <div class="flex flex-col">
+                        <label for="facid-input" class="text-gray-400 text-sm mb-2">FDEP Facility ID</label>
+                        <input type="tel" id="facid-input" inputmode="numeric" placeholder="Enter FACID, e.g., 138505326 or 8505326" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
                     </div>
 
-                    <!-- Search by FACID Button --><button id="facid-search-button" disabled 
+                    <!-- Search by FACID Button -->
+                    <button id="facid-search-button" disabled 
                                 class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
-                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                       hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
+                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search by FACID
+                    </button>
+
+                    <!-- ERIC Input (New) -->
+                    <div class="flex flex-col pt-4 border-t border-gray-700">
+                        <label for="eric-input" class="text-gray-400 text-sm mb-2">ERIC ID</label>
+                        <input type="text" id="eric-input" placeholder="ERIC-999, ERIC_999, and 999 are all acceptable." 
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
+                    </div>
+
+                    <!-- Search by ERIC Button (New) -->
+                    <button id="eric-search-button" disabled 
+                                class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
+                                       hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
+                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
+                        Search by ERIC ID
                     </button>
                 </div>
 
-                <!-- 3. Property Appraiser Search Section (Folio & Address) --><div class="space-y-4 border-b border-gray-700 pb-8">
+                <!-- 3. Property Appraiser Search Section (Folio & Address) -->
+                <div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-purple-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -95,7 +156,8 @@
                     </h2>
 
                     <div class="space-y-6">
-                        <!-- Folio Search Block --><div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
+                        <!-- Folio Search Block -->
+                        <div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
                             <h3 class="text-lg font-semibold text-purple-300">Search by Folio Number:</h3>
                             <div class="flex flex-col">
                                 <input type="text" id="folio-input" placeholder="e.g., 01-1028-147-1010 (dashes optional)" 
@@ -103,14 +165,15 @@
                             </div>
                             <button id="folio-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
-                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                           hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                           disabled:opacity-50 disabled:cursor-not-allowed"> 
                                 Search Folio
                             </button>
                         </div>
 
-                        <!-- Address Search Block --><div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
+                        <!-- Address Search Block -->
+                        <div class="p-4 bg-gray-700/50 rounded-lg space-y-3">
                             <h3 class="text-lg font-semibold text-purple-300">Search by Address:</h3>
                             <div class="flex flex-col">
                                 <input type="text" id="address-input" placeholder="e.g., 2735 NW 7TH ST" 
@@ -118,33 +181,46 @@
                             </div>
                             <button id="address-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                            hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
-                                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                            disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                           hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                                           focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                           disabled:opacity-50 disabled:cursor-not-allowed"> 
                                 Search Address
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. FDEP GIS Facility Search Section (Map Direct) --><div class="space-y-4 pt-6">
+                <!-- 4. FDEP GIS Facility Search Section (Map Direct) -->
+                <div class="space-y-4">
                     <h2 class="text-xl font-bold text-red-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243m10.606 0a2 2 0 110-2 2 2 0 010 2zm-8 2a2 2 0 110-2 2 2 0 010 2z" />
                         </svg>
                         Search FDEP STCM GIS Layer
+
+                        <!-- Info Tooltip (Red) -->
+                        <div class="relative group ml-2 cursor-help">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed">
+                                Use this option to locate the facility by using FDEP Map Direct at https://ca.dep.state.fl.us/mapdirect/
+                            </div>
+                        </div>
                     </h2>
 
-                    <!-- FACID Input for Map --><div class="flex flex-col">
-                        <input type="tel" id="map-facid-input" inputmode="numeric" placeholder="7 digit FACID. e.g., 8504110" 
+                    <!-- FACID Input for Map -->
+                    <div class="flex flex-col">
+                        <input type="tel" id="map-facid-input" inputmode="numeric" placeholder="Enter FACID, e.g., 138505326 or 8505326" 
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 text-center">
                     </div>
 
-                    <!-- Search by FACID Button for Map --><button id="map-search-button" disabled 
+                    <!-- Search by FACID Button for Map -->
+                    <button id="map-search-button" disabled 
                                 class="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                        hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
-                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
+                                       hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
+                                       focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
+                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search STCM GIS Layer
                     </button>
                 </div>
@@ -153,10 +229,12 @@
         </div>
     </div>
 
-    <!-- Browser View (Hidden by default, fixed full screen) --><div id="browser-view" class="hidden fixed inset-0 z-10">
+    <!-- Browser View (Hidden by default, fixed full screen) -->
+    <div id="browser-view" class="hidden fixed inset-0 z-10">
         <iframe id="results-iframe" src="about:blank" class="w-full h-full border-none relative z-0" loading="lazy"></iframe>
         
-        <!-- Controls for the browser view --><div class="fixed top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 z-20">
+        <!-- Controls for the browser view -->
+        <div class="fixed top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 z-20">
             <button id="new-search-button" 
                     class="bg-yellow-400 text-gray-900 py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-bold shadow-xl 
                            hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 
@@ -164,7 +242,8 @@
                 ← New Search 
             </button>
 
-            <!-- Copy Link Button --><button id="copy-link-button"
+            <!-- Copy Link Button -->
+            <button id="copy-link-button"
                     class="bg-orange-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-bold shadow-xl 
                            hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 
                            focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 z-10 
@@ -172,7 +251,8 @@
                 Copy Page Link
             </button>
 
-            <!-- Folio Transfer Controls (SHOWS AFTER ECM CASE SEARCH) --><div id="folio-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
+            <!-- Folio Transfer Controls (SHOWS AFTER ECM CASE SEARCH) -->
+            <div id="folio-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
                 <input type="text" id="folio-transfer-input" placeholder="Paste Folio from results..." 
                        class="bg-gray-800 text-white py-2 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 w-40 sm:w-60" />
                 <button id="transfer-folio-button" disabled 
@@ -182,7 +262,8 @@
                 </button>
             </div>
             
-            <!-- Address Transfer Controls (SHOWS AFTER FDEP NEXUS SEARCH) --><div id="address-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
+            <!-- Address Transfer Controls (SHOWS AFTER FDEP NEXUS SEARCH) -->
+            <div id="address-transfer-controls" class="flex items-center space-x-2 bg-gray-700 p-2 rounded-xl shadow-xl hidden">
                 <input type="text" id="address-transfer-input" placeholder="Paste address from results" 
                        class="bg-gray-800 text-white py-2 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 w-40 sm:w-60" />
                 <button id="transfer-address-button" disabled 
@@ -192,7 +273,8 @@
                 </button>
             </div>
 
-            <!-- The old generated-url span is now always hidden as its functionality is replaced by the button --><span id="generated-url" class="hidden"></span> 
+            <!-- The old generated-url span is now always hidden as its functionality is replaced by the button -->
+            <span id="generated-url" class="hidden"></span> 
         </div>
     </div>
     
@@ -224,6 +306,10 @@
         const facidInput = document.getElementById('facid-input');
         const facidSearchButton = document.getElementById('facid-search-button');
 
+        // ERIC Search Elements (New)
+        const ericInput = document.getElementById('eric-input');
+        const ericSearchButton = document.getElementById('eric-search-button');
+
         // Folio Search Elements (on main page)
         const folioInput = document.getElementById('folio-input');
         const folioSearchButton = document.getElementById('folio-search-button');
@@ -239,6 +325,7 @@
         // === Base URLs ===
         const caseBaseURL = "https://ecmrer.miamidade.gov/document-search?page=1&limit=25&sortOrder=date_desc&searchTerm=&facilityName=&folio=&documentType=&startDate=&endDate=&houseNumber=&streetDirection=&streetName=&streetType=&zipCode=&description=&caseNumber=PLACEHOLDER";
         const facidBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/@/facility!search";
+        const ericBaseURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents/ERIC_@/facility!search";
         const folioBaseURL = "https://www.miamidade.gov/Apps/PA/propertysearch/#/?folio=@";
         const addressBaseURL = "https://apps.miamidadepa.gov/PropertySearch/#/?address=@";
         const mapBaseURL = "https://ca.dep.state.fl.us/mapdirect/?focus=stortanks&zoom=query&querytype=stcm&queryvalues=@";
@@ -246,7 +333,8 @@
         // === Utility Functions ===
 
         const padCaseNumber = (num) => String(num).padStart(5, '0');
-        const cleanFacidInput = (input) => input.value.replace(/[^0-9]/g, '').slice(0, 7);
+        // Updated to allow up to 9 digits
+        const cleanFacidInput = (input) => input.value.replace(/[^0-9]/g, '').slice(0, 9);
 
         const cleanAddressOrdinals = (address) => {
             if (!address) return '';
@@ -287,11 +375,18 @@
             }
             caseSearchButton.disabled = caseNumberInput.value.length === 0;
         });
-
-        // 2. Nexus FACID Validation (7 digits required)
+        // 2. Nexus FACID Validation (7 or 9 digits required)
         facidInput.addEventListener('input', () => {
             facidInput.value = cleanFacidInput(facidInput);
-            facidSearchButton.disabled = facidInput.value.length !== 7;
+            // Enable button if length is exactly 7 OR exactly 9
+            facidSearchButton.disabled = !(facidInput.value.length === 7 || facidInput.value.length === 9);
+        });
+
+        // 2.1 ERIC Validation (Allow text, validate digits exist)
+        ericInput.addEventListener('input', () => {
+            // Check if there are any digits in the input to enable the button
+            const numericPart = ericInput.value.replace(/\D/g, ''); 
+            ericSearchButton.disabled = numericPart.length === 0;
         });
 
         // 3. Folio Validation (13 digits required after removing dashes) - Main Page Input
@@ -305,10 +400,11 @@
             addressSearchButton.disabled = addressInput.value.trim().length === 0;
         });
 
-        // 5. Map FACID Validation (7 digits required)
+        // 5. Map FACID Validation (7 or 9 digits required)
         mapFacidInput.addEventListener('input', () => {
             mapFacidInput.value = cleanFacidInput(mapFacidInput);
-            mapSearchButton.disabled = mapFacidInput.value.length !== 7;
+            // Enable button if length is exactly 7 OR exactly 9
+            mapSearchButton.disabled = !(mapFacidInput.value.length === 7 || mapFacidInput.value.length === 9);
         });
         
         // 6. Folio Transfer Input Validation (Browser View)
@@ -341,13 +437,33 @@
 
         // 2. FACID Search Handler (Shows Address Transfer)
         facidSearchButton.addEventListener('click', () => {
-            const facid = facidInput.value;
+            let facid = facidInput.value;
+            
+            // If 9 digits are entered, ignore the first two (leftmost)
+            if (facid.length === 9) {
+                facid = facid.substring(2);
+            }
+
             const finalURL = facidBaseURL.replace('@', facid);
             resultsIframe.src = finalURL;
             
             showBrowserView(finalURL); // Now handles showing copy button
 
             // Show Address controls, Hide Folio controls
+            addressTransferControls.classList.remove('hidden');
+            folioTransferControls.classList.add('hidden');
+        });
+
+        // 2.1 ERIC Search Handler (New)
+        ericSearchButton.addEventListener('click', () => {
+            // Extract only the numbers from the input (ignores ERIC-, ERIC_, etc.)
+            const ericNum = ericInput.value.replace(/\D/g, '');
+            const finalURL = ericBaseURL.replace('@', ericNum);
+            resultsIframe.src = finalURL;
+            
+            showBrowserView(finalURL);
+
+            // Show Address controls, Hide Folio controls (Assuming consistent with Nexus behavior)
             addressTransferControls.classList.remove('hidden');
             folioTransferControls.classList.add('hidden');
         });
@@ -370,7 +486,13 @@
 
         // 5. Map Search Handler (Opens new tab)
         mapSearchButton.addEventListener('click', () => {
-            const facid = mapFacidInput.value;
+            let facid = mapFacidInput.value;
+
+            // If 9 digits are entered, ignore the first two (leftmost)
+            if (facid.length === 9) {
+                facid = facid.substring(2);
+            }
+
             const finalURL = mapBaseURL.replace('@', facid);
             openInNewTab(finalURL);
         });
@@ -433,6 +555,7 @@
             caseNumberInput.value = '';
             workgroupSelect.value = 'UT';
             facidInput.value = '';
+            ericInput.value = ''; // Clear ERIC input
             folioInput.value = '';
             addressInput.value = '';
             mapFacidInput.value = '';
@@ -442,6 +565,7 @@
             // Disable all search buttons
             caseSearchButton.disabled = true;
             facidSearchButton.disabled = true;
+            ericSearchButton.disabled = true; // Disable ERIC button
             folioSearchButton.disabled = true;
             addressSearchButton.disabled = true;
             mapSearchButton.disabled = true;
@@ -465,4 +589,3 @@
     </script>
 </body>
 </html>
-

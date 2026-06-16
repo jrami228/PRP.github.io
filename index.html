@@ -122,7 +122,7 @@
                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
-                        Search by STCM FACID
+                        Search FDEP 'Nexus Portal' for Oculus Files
                     </button>
 
                     <!-- FACID to Workgroup Reverse Lookup Container -->
@@ -432,6 +432,12 @@
         const GIS_CHIP = 'bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         const PENR_BTN = 'w-full bg-sky-600 hover:bg-sky-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const PENR_CHIP = 'bg-sky-600 hover:bg-sky-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        const ORANGE_BTN = 'w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
+        const ORANGE_CHIP = 'bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        // Google Maps button: Google's brand spectrum (blue→green→yellow→red) via inline gradient.
+        const GMAPS_BTN = 'w-full text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
+        const GMAPS_CHIP = 'text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        const GMAPS_GRADIENT = 'linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335)';
 
         // Clipboard copy (works in non-secure contexts via fallback).
         const fallbackCopy = (text) => {
@@ -472,7 +478,7 @@
         const buildGisButton = (facid, isBrowserView) => {
             const btn = document.createElement('button');
             btn.className = isBrowserView ? GIS_CHIP : GIS_BTN;
-            btn.textContent = isBrowserView ? 'STCM GIS' : 'Search STCM GIS Layer';
+            btn.textContent = isBrowserView ? `STCM GIS (${facid})` : `Search STCM GIS Layer (${facid})`;
             btn.onclick = () => { window.open(mapBaseURL.replace('@', facid), '_blank'); };
             return [btn];
         };
@@ -532,10 +538,10 @@
 
             const ecBtn = document.createElement('button');
             if (isBrowserView) {
-                ecBtn.className = PA_CHIP;
+                ecBtn.className = ORANGE_CHIP;
                 ecBtn.textContent = 'EC Map';
             } else {
-                ecBtn.className = PA_BTN + ' flex items-center justify-center gap-2';
+                ecBtn.className = ORANGE_BTN + ' flex items-center justify-center gap-2';
                 const ecLabel = document.createElement('span');
                 ecLabel.textContent = 'Search Environmental Considerations Map';
                 ecBtn.appendChild(ecLabel);
@@ -548,8 +554,10 @@
             ecBtn.onclick = () => { window.open(envBaseURL.replace('@', encodeURIComponent(cleaned)), '_blank'); };
 
             const gmBtn = document.createElement('button');
-            gmBtn.className = isBrowserView ? PA_CHIP : PA_BTN;
-            gmBtn.textContent = isBrowserView ? 'Google Maps' : 'Search Google Maps';
+            gmBtn.className = isBrowserView ? GMAPS_CHIP : GMAPS_BTN;
+            gmBtn.style.background = GMAPS_GRADIENT;
+            gmBtn.style.textShadow = '0 1px 2px rgba(0,0,0,0.7)';
+            gmBtn.textContent = isBrowserView ? `Google Maps (${rec.a})` : `Search Google Maps (${rec.a})`;
             gmBtn.onclick = () => { window.open(googleMapsBaseURL + encodeURIComponent(rec.a + ', Miami-Dade County, FL'), '_blank'); };
 
             return [paBtn, ecBtn, gmBtn];
@@ -620,10 +628,10 @@
             const btn = document.createElement('button');
             if (isBrowserView) {
                 btn.className = 'bg-teal-600 hover:bg-teal-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
-                btn.textContent = 'CAP to Date';
+                btn.textContent = `CAP to Date (${facid})`;
             } else {
                 btn.className = 'w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-                btn.textContent = 'CAP to Date Report';
+                btn.textContent = `CAP to Date Report (${facid})`;
             }
             btn.onclick = () => {
                 const form = document.createElement('form');
@@ -643,14 +651,16 @@
         };
 
         // Unified FACID-derived button stack used by BOTH the Work Group and FDEP Facility ID
-        // sections, so they stay identical. Order: Address (PA+copy / EC / Google Maps),
-        // STCM GIS Layer, Folio (PA / ECM-CARA), Facility Information (form only), CAP to Date.
-        // `folio` is optional; folio buttons render only when provided. Facility Information and
-        // address buttons render only when local data exists.
+        // sections, so they stay identical. Order: EC Map, Google Maps, STCM GIS Layer, Address
+        // via Property Appraiser (+copy), Folio (PA / ECM-CARA), Facility Information (form only),
+        // CAP to Date. `folio` is optional; folio buttons render only when provided.
         const buildFacidStack = (facid, folio, isBrowserView) => {
             const nodes = [];
-            buildAddressButtons(facid, isBrowserView).forEach(n => nodes.push(n));
-            buildGisButton(facid, isBrowserView).forEach(n => nodes.push(n));
+            const [paBtn, ecBtn, gmBtn] = buildAddressButtons(facid, isBrowserView);
+            if (ecBtn) nodes.push(ecBtn);   // EC Map
+            if (gmBtn) nodes.push(gmBtn);   // Google Maps
+            buildGisButton(facid, isBrowserView).forEach(n => nodes.push(n));   // STCM GIS Layer
+            if (paBtn) nodes.push(paBtn);   // Address via Property Appraiser (below STCM, above Folio)
             if (folio) buildFolioButtons(folio, isBrowserView).forEach(n => nodes.push(n));
             if (!isBrowserView) buildInfoButton(facid, '').forEach(n => nodes.push(n));
             buildCapToDateButton(facid, isBrowserView).forEach(n => nodes.push(n));
@@ -829,13 +839,26 @@
             if (el && el.tagName === 'INPUT' && el.type === 'number') el.blur();
         }, { passive: true });
 
+        // Keep the two work-group action buttons labelled with the case being searched, e.g.
+        // "Search ECM/CARA (UT-88)" / "Search PEN-R Tasks (IW5-105)". Base label when empty.
+        const updateCaseButtonLabels = () => {
+            const num = caseNumberInput.value.trim();
+            const tag = num ? ` (${workgroupSelect.value}-${num})` : '';
+            caseSearchButton.textContent = `Search ECM/CARA${tag}`;
+            penrSearchButton.textContent = `Search PEN-R Tasks${tag}`;
+        };
+
         caseNumberInput.addEventListener('input', () => {
             if (caseNumberInput.value.length > 5) caseNumberInput.value = caseNumberInput.value.slice(0, 5);
             caseSearchButton.disabled = caseNumberInput.value.length === 0;
             penrSearchButton.disabled = caseNumberInput.value.length === 0;
+            updateCaseButtonLabels();
             updateFacidButtons();
         });
-        workgroupSelect.addEventListener('change', updateFacidButtons);
+        workgroupSelect.addEventListener('change', () => {
+            updateCaseButtonLabels();
+            updateFacidButtons();
+        });
 
         facidInput.addEventListener('input', () => {
             facidInput.value = facidInput.value.replace(/[^0-9]/g, '');
@@ -1012,6 +1035,7 @@
             resultsIframe.src = 'about:blank';
             browserView.classList.add('hidden');
             searchFormView.classList.remove('hidden');
+            updateCaseButtonLabels();
         });
     </script>
 </body>

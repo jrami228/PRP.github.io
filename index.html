@@ -43,8 +43,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Focus mode: hide every generated result button except the warning buttons. */
+        /* Focus mode: hide every generated result element AND every default button
+           (Search ECM/CARA, PEN-R, Info Portal, ERIC, etc.) — keep only the warning
+           buttons and the triangle toggle itself. */
         .focus-warnings .facid-entry:not(.warning-entry) { display: none !important; }
+        .focus-warnings button:not(.warning-entry):not(.warn-toggle) { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
@@ -606,7 +609,7 @@
             const colorCls = color === 'red'
                 ? 'border-red-500 text-red-400 hover:bg-red-900/40'
                 : 'border-amber-500 text-amber-400 hover:bg-amber-900/40';
-            btn.className = 'shrink-0 px-3 flex items-center justify-center rounded-lg border-2 transition duration-200 ' + colorCls;
+            btn.className = 'warn-toggle shrink-0 px-3 flex items-center justify-center rounded-lg border-2 transition duration-200 ' + colorCls;
             btn.title = (color === 'red' ? 'Address contains multiple FDEP sites' : 'Folio shared by multiple work groups') + ' \u2014 hide/show the other result buttons';
             btn.innerHTML = WARN_TRIANGLE_SVG;
             btn.addEventListener('click', () => {
@@ -621,8 +624,9 @@
         const setWarningIcons = (container, sectionEl, hasAddr, hasFolio) => {
             container.innerHTML = '';
             sectionEl.classList.remove('focus-warnings');
+            // If both apply, only the red (multiple FDEP sites) triangle is shown.
             if (hasAddr) container.appendChild(makeWarningToggle('red', sectionEl));
-            if (hasFolio) container.appendChild(makeWarningToggle('amber', sectionEl));
+            else if (hasFolio) container.appendChild(makeWarningToggle('amber', sectionEl));
         };
 
         // STCM GIS Layer (FDEP Map Direct) for a FACID — new tab.

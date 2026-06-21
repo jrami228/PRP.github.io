@@ -126,7 +126,7 @@
                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                        disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"> 
-                        <span id="facid-search-label">Search FDEP Information Portal for Oculus Files</span>
+                        <span id="facid-search-label">Search FDEP Info Portal for Oculus Files</span>
                         <div class="inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0"
                              title="The Information Portal (aka Nexus Portal) contains all publicly available files found in FDEP Oculus for the Subject Facility">i</div>
                     </button>
@@ -235,9 +235,14 @@
                                     i
                                 </div>
                             </button>
+                            <button id="gmaps-addr-search-button" disabled 
+                                    style="background: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335); text-shadow: 0 1px 2px rgba(0,0,0,0.7);"
+                                    class="w-full text-white py-3 px-6 rounded-lg font-bold shadow-md transition duration-200 disabled:opacity-50"> 
+                                Search Google Maps
+                            </button>
                             <button id="earth-search-button" disabled 
-                                    class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                           hover:bg-purple-700 transition duration-200 disabled:opacity-50"> 
+                                    style="background: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335); text-shadow: 0 1px 2px rgba(0,0,0,0.7);"
+                                    class="w-full text-white py-3 px-6 rounded-lg font-bold shadow-md transition duration-200 disabled:opacity-50"> 
                                 Search Google Earth
                             </button>
                         </div>
@@ -439,6 +444,7 @@
         const addressSearchButton = document.getElementById('address-search-button');
         const envSearchButton = document.getElementById('env-search-button');
         const earthSearchButton = document.getElementById('earth-search-button');
+        const gmapsAddrSearchButton = document.getElementById('gmaps-addr-search-button');
         const mapFacidInput = document.getElementById('map-facid-input');
         const mapSearchButton = document.getElementById('map-search-button');
 
@@ -549,12 +555,46 @@
             return d;
         };
         const NEXUS_INFO_TITLE = 'The Information Portal (aka Nexus Portal) contains all publicly available files found in FDEP Oculus for the Subject Facility';
+        const GIS_INFO_TITLE = 'Use this option to find a facility by using FDEP Map Direct at https://ca.dep.state.fl.us/mapdirect/ (note: This GIS Point is usually placed at the most current UST locations per FDEP STCM GPS coordinates)';
+
+        // "!!" warning badge with a native-title tooltip.
+        const makeBangIcon = (title) => {
+            const d = document.createElement('div');
+            d.className = 'inline-flex items-center justify-center h-5 px-1.5 border border-white rounded-full text-[10px] font-bold cursor-help shrink-0';
+            d.title = title;
+            d.textContent = '!!';
+            return d;
+        };
+
+        // (i) badge with a RICH hover tooltip (supports bold). Clicking the badge won't trigger the parent button.
+        const makeRichInfoIcon = (innerHTML) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'relative group inline-flex shrink-0';
+            const circle = document.createElement('div');
+            circle.className = 'inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help';
+            circle.textContent = 'i';
+            wrap.appendChild(circle);
+            const tip = document.createElement('div');
+            tip.className = 'absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal not-italic rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed';
+            tip.innerHTML = innerHTML;
+            wrap.appendChild(tip);
+            wrap.addEventListener('click', (e) => e.stopPropagation());
+            return wrap;
+        };
 
         // STCM GIS Layer (FDEP Map Direct) for a FACID — new tab.
         const buildGisButton = (facid, isBrowserView) => {
             const btn = document.createElement('button');
-            btn.className = isBrowserView ? GIS_CHIP : GIS_BTN;
-            btn.textContent = isBrowserView ? `STCM GIS (${facid})` : `Search STCM GIS Layer (${facid})`;
+            if (isBrowserView) {
+                btn.className = GIS_CHIP;
+                btn.textContent = `STCM GIS (${facid})`;
+            } else {
+                btn.className = GIS_BTN + ' flex items-center justify-center gap-2';
+                const lbl = document.createElement('span');
+                lbl.textContent = `Search STCM GIS Layer (${facid})`;
+                btn.appendChild(lbl);
+                btn.appendChild(makeInfoIcon(GIS_INFO_TITLE));
+            }
             btn.onclick = () => { window.open(mapBaseURL.replace('@', facid), '_blank'); };
             return [btn];
         };
@@ -582,7 +622,7 @@
             } else {
                 btn.className = GREEN_BTN + ' flex items-center justify-center gap-2';
                 const lbl = document.createElement('span');
-                lbl.textContent = `Search FDEP Information Portal for Oculus Files (${facid})`;
+                lbl.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
                 btn.appendChild(lbl);
                 btn.appendChild(makeInfoIcon(NEXUS_INFO_TITLE));
             }
@@ -605,7 +645,7 @@
             if (!rec || !rec.a) return [];
             const btn = document.createElement('button');
             btn.className = isBrowserView ? GREEN_CHIP : GREEN_BTN;
-            btn.textContent = isBrowserView ? `Nexus by Address (${rec.a})` : `Search Nexus Portal by Address (${rec.a})`;
+            btn.textContent = isBrowserView ? `Info Portal by Address (${rec.a})` : `Search FDEP Info Portal by Address (${rec.a})`;
             btn.onclick = () => { window.open(nexusAddrBaseURL + encodeURIComponent(rec.a), '_blank'); };
             return [btn];
         };
@@ -653,7 +693,7 @@
         // Address for a FACID: Property Appraiser (+copy icon), EC Map, Google Maps (all new tab). [] if no address.
         const buildAddressButtons = (facid, isBrowserView) => {
             const rec = mdcByFacid[facid];
-            if (!rec || !rec.a) return [];
+            if (!rec || !rec.a) return { paBtn: null, ecBtn: null, mapsEarth: [] };
             const cleaned = cleanAddressOrdinals(rec.a);
 
             const paBtn = document.createElement('button');
@@ -683,25 +723,35 @@
             }
             ecBtn.onclick = () => { window.open(envBaseURL.replace('@', encodeURIComponent(cleaned)), '_blank'); };
 
+            // Google Maps + Google Earth — share one equal-width row (form view). Each carries an (i)
+            // tooltip naming the STCM address + FACID used. Same Google spectrum styling.
+            const mapTip = () => makeRichInfoIcon(`STCM Address <b>${escapeHtml(rec.a)}</b> associated with FACID <b>${escapeHtml(facid)}</b> will be used for this search`);
             const gmBtn = document.createElement('button');
-            gmBtn.className = isBrowserView ? GMAPS_CHIP : GMAPS_BTN;
-            gmBtn.style.background = GMAPS_GRADIENT;
-            gmBtn.style.textShadow = '0 1px 2px rgba(0,0,0,0.7)';
-            gmBtn.textContent = isBrowserView ? `Google Maps (${rec.a})` : `Search Google Maps (${rec.a})`;
-            gmBtn.onclick = () => { window.open(googleMapsBaseURL + encodeURIComponent(rec.a + ', Miami-Dade County, FL'), '_blank'); };
-
-            // Google Earth — same Google spectrum styling as Google Maps, address in parentheses.
             const geBtn = document.createElement('button');
-            geBtn.className = isBrowserView ? GMAPS_CHIP : GMAPS_BTN;
-            geBtn.style.background = GMAPS_GRADIENT;
-            geBtn.style.textShadow = '0 1px 2px rgba(0,0,0,0.7)';
-            geBtn.textContent = isBrowserView ? `Google Earth (${rec.a})` : `Search Google Earth (${rec.a})`;
-            geBtn.onclick = () => {
-                const plusFormatted = (rec.a + ', Miami-Dade County').replace(/\s+/g, '+');
-                window.open(earthBaseURL.replace('@', plusFormatted), '_blank');
-            };
+            const gmOpen = () => window.open(googleMapsBaseURL + encodeURIComponent(rec.a + ', Miami-Dade County, FL'), '_blank');
+            const geOpen = () => window.open(earthBaseURL.replace('@', (rec.a + ', Miami-Dade County').replace(/\s+/g, '+')), '_blank');
 
-            return [paBtn, ecBtn, gmBtn, geBtn];
+            let mapsEarth;
+            if (isBrowserView) {
+                [gmBtn, geBtn].forEach(b => { b.className = GMAPS_CHIP; b.style.background = GMAPS_GRADIENT; b.style.textShadow = '0 1px 2px rgba(0,0,0,0.7)'; });
+                gmBtn.textContent = 'Google Maps';
+                geBtn.textContent = 'Google Earth';
+                mapsEarth = [gmBtn, geBtn];
+            } else {
+                const rowBtn = 'flex-1 min-w-0 text-white py-3 px-3 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-1.5';
+                [gmBtn, geBtn].forEach(b => { b.className = rowBtn; b.style.background = GMAPS_GRADIENT; b.style.textShadow = '0 1px 2px rgba(0,0,0,0.7)'; });
+                const gmL = document.createElement('span'); gmL.textContent = 'Search Google Maps'; gmBtn.appendChild(gmL); gmBtn.appendChild(mapTip());
+                const geL = document.createElement('span'); geL.textContent = 'Search Google Earth'; geBtn.appendChild(geL); geBtn.appendChild(mapTip());
+                const row = document.createElement('div');
+                row.className = 'flex gap-4 w-full facid-entry';
+                row.appendChild(gmBtn);
+                row.appendChild(geBtn);
+                mapsEarth = [row];
+            }
+            gmBtn.onclick = gmOpen;
+            geBtn.onclick = geOpen;
+
+            return { paBtn, ecBtn, mapsEarth };
         };
 
         // Facility Information button + toggle table (form view only). [] if no eligibility data.
@@ -715,6 +765,7 @@
             const btnLabel = document.createElement('span');
             btnLabel.textContent = labelSuffix ? `Facility Information (${labelSuffix})` : 'Facility Information';
             btn.appendChild(btnLabel);
+            btn.appendChild(makeBangIcon('This is a snapshot information obtained in June 2026. This can serve as a quick reminder, but must NOT be used for a file review.'));
             const chevron = document.createElement('span');
             chevron.textContent = '▾';
             chevron.className = 'text-indigo-200 text-xs';
@@ -933,12 +984,11 @@
             const nodes = [];
             buildSharedAddressButton(facid, isBrowserView).forEach(n => nodes.push(n));
             buildSharedFolioButton(folio, isBrowserView).forEach(n => nodes.push(n));
-            const [paBtn, ecBtn, gmBtn, geBtn] = buildAddressButtons(facid, isBrowserView);
+            const addr = buildAddressButtons(facid, isBrowserView);
             buildGisButton(facid, isBrowserView).forEach(n => nodes.push(n));   // STCM GIS Layer (above EC Map)
-            if (ecBtn) nodes.push(ecBtn);   // EC Map
-            if (gmBtn) nodes.push(gmBtn);   // Google Maps
-            if (geBtn) nodes.push(geBtn);   // Google Earth
-            if (paBtn) nodes.push(paBtn);   // Address via Property Appraiser (above Folio)
+            if (addr.ecBtn) nodes.push(addr.ecBtn);   // EC Map
+            addr.mapsEarth.forEach(n => nodes.push(n));   // Google Maps + Google Earth (shared row in form view)
+            if (addr.paBtn) nodes.push(addr.paBtn);   // Address via Property Appraiser (above Folio)
             if (folio) buildFolioButtons(folio, isBrowserView).forEach(n => nodes.push(n));
             if (folio && isBrowserView) buildFolioEcmButton(folio, true).forEach(n => nodes.push(n));
             if (!isBrowserView) buildInfoButton(facid, '').forEach(n => nodes.push(n));
@@ -1051,11 +1101,11 @@
             setFolioEcm(facidFolioEcmContainer, null);
             facidNexusAddrContainer.innerHTML = '';
             facidNexusAddrContainer.classList.add('hidden');
-            facidSearchLabel.textContent = 'Search FDEP Information Portal for Oculus Files';
+            facidSearchLabel.textContent = 'Search FDEP Info Portal for Oculus Files';
             let id = facidInput.value.replace(/[^0-9]/g, '');
             if (id.length !== 7 && id.length !== 9) return;
             const facid = id.length === 9 ? id.substring(2) : id;
-            facidSearchLabel.textContent = `Search FDEP Information Portal for Oculus Files (${facid})`;
+            facidSearchLabel.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
             buildNexusAddrButton(facid, false).forEach(n => facidNexusAddrContainer.appendChild(n));
             if (facidNexusAddrContainer.children.length) facidNexusAddrContainer.classList.remove('hidden');
             const wgNums = findWGsByFacid(facid);
@@ -1155,6 +1205,7 @@
             addressSearchButton.disabled = !hasText;
             envSearchButton.disabled = !hasText;
             earthSearchButton.disabled = !hasText;
+            gmapsAddrSearchButton.disabled = !hasText;
         });
         mapFacidInput.addEventListener('input', () => {
             mapFacidInput.value = mapFacidInput.value.replace(/[^0-9]/g, '');
@@ -1260,6 +1311,9 @@
             const plusFormatted = rawAddress.replace(/\s+/g, '+');
             window.open(earthBaseURL.replace('@', plusFormatted), '_blank');
         });
+        gmapsAddrSearchButton.addEventListener('click', () => {
+            window.open(googleMapsBaseURL + encodeURIComponent(addressInput.value.trim() + ', Miami-Dade County, FL'), '_blank');
+        });
         mapSearchButton.addEventListener('click', () => {
             let id = mapFacidInput.value;
             if (id.length === 9) id = id.substring(2);
@@ -1299,7 +1353,7 @@
             addressInput.value = '';
             mapFacidInput.value = '';
             facnameInput.value = '';
-            caseSearchButton.disabled = penrSearchButton.disabled = facidSearchButton.disabled = ericSearchButton.disabled = folioSearchButton.disabled = folioEcmSearchButton.disabled = addressSearchButton.disabled = envSearchButton.disabled = earthSearchButton.disabled = mapSearchButton.disabled = true;
+            caseSearchButton.disabled = penrSearchButton.disabled = facidSearchButton.disabled = ericSearchButton.disabled = folioSearchButton.disabled = folioEcmSearchButton.disabled = addressSearchButton.disabled = envSearchButton.disabled = earthSearchButton.disabled = gmapsAddrSearchButton.disabled = mapSearchButton.disabled = true;
             liveFacidContainer.innerHTML = '';
             browserFacidContainer.innerHTML = '';
             facidToWgContainer.innerHTML = '';

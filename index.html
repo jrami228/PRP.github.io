@@ -95,8 +95,8 @@
                     <div id="wg-folio-ecm-container" class="hidden"></div>
 
                     <button id="penr-search-button" disabled 
-                                 class="w-full bg-sky-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                       hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 
+                                 class="w-full bg-white text-black py-3 px-6 rounded-lg font-bold shadow-lg border border-gray-300
+                                       hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 
                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                        disabled:opacity-50 disabled:cursor-not-allowed"> 
                         Search PEN-R Tasks
@@ -125,9 +125,14 @@
                                  class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
-                                       disabled:opacity-50 disabled:cursor-not-allowed"> 
-                        Search FDEP 'Nexus Portal' for Oculus Files
+                                       disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"> 
+                        <span id="facid-search-label">Search FDEP Information Portal for Oculus Files</span>
+                        <div class="inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0"
+                             title="The Information Portal (aka Nexus Portal) contains all publicly available files found in FDEP Oculus for the Subject Facility">i</div>
                     </button>
+
+                    <!-- Search Nexus Portal by Address — immediately below the FACID Information Portal search -->
+                    <div id="facid-nexus-addr-container" class="hidden mt-4"></div>
 
                     <!-- FACID to Workgroup Reverse Lookup Container -->
                     <div id="facid-to-wg-container" class="space-y-4 mt-4"></div>
@@ -153,7 +158,33 @@
                     </button>
                 </div>
 
-                <!-- 3. Parcel Search Section -->
+                <!-- 3. Find Facility by Name (Miami-Dade County 13) -->
+                <div class="space-y-4 border-b border-gray-700 pb-8">
+                    <h2 class="text-xl font-bold text-orange-400 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Find Facility by Name
+                        <div class="relative group ml-2 cursor-help">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed">
+                                Type any part of a facility name to find Miami-Dade County (County 13) FDEP facilities. Tap a result to load its Facility ID above.
+                            </div>
+                        </div>
+                    </h2>
+
+                    <div class="flex flex-col">
+                        <input type="text" id="facname-input" placeholder="Start typing a facility name, e.g., SAFARI" 
+                               autocomplete="off"
+                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-200 w-full">
+                        <div id="facname-count" class="text-orange-300 text-xs mt-2 h-4"></div>
+                        <div id="facname-results" class="mt-1 max-h-72 overflow-y-auto rounded-lg divide-y divide-gray-700 border border-gray-700 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- 3b. Parcel Search Section -->
                 <div class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-purple-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -210,32 +241,6 @@
                                 Search Google Earth
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 3b. Facility Name Finder (Miami-Dade County 13) -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
-                    <h2 class="text-xl font-bold text-orange-400 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Find Facility by Name
-                        <div class="relative group ml-2 cursor-help">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs font-normal rounded-lg shadow-xl border border-gray-600 hidden group-hover:block z-50 text-center leading-relaxed">
-                                Type any part of a facility name to find Miami-Dade County (County 13) FDEP facilities. Tap a result to load its Facility ID above.
-                            </div>
-                        </div>
-                    </h2>
-
-                    <div class="flex flex-col">
-                        <input type="text" id="facname-input" placeholder="Start typing a facility name, e.g., SAFARI" 
-                               autocomplete="off"
-                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-200 w-full">
-                        <div id="facname-count" class="text-orange-300 text-xs mt-2 h-4"></div>
-                        <div id="facname-results" class="mt-1 max-h-72 overflow-y-auto rounded-lg divide-y divide-gray-700 border border-gray-700 hidden"></div>
                     </div>
                 </div>
 
@@ -415,6 +420,8 @@
         const browserFacidContainer = document.getElementById('browser-facid-container');
         const facidToWgContainer = document.getElementById('facid-to-wg-container');
         const facidStackContainer = document.getElementById('facid-stack-container');
+        const facidSearchLabel = document.getElementById('facid-search-label');
+        const facidNexusAddrContainer = document.getElementById('facid-nexus-addr-container');
         const wgFolioEcmContainer = document.getElementById('wg-folio-ecm-container');
         const facidFolioEcmContainer = document.getElementById('facid-folio-ecm-container');
         const facnameInput = document.getElementById('facname-input');
@@ -480,8 +487,8 @@
         const INDIGO_BTN = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
         const GIS_BTN = 'w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const GIS_CHIP = 'bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
-        const PENR_BTN = 'w-full bg-sky-600 hover:bg-sky-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-        const PENR_CHIP = 'bg-sky-600 hover:bg-sky-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        const PENR_BTN = 'w-full bg-white hover:bg-gray-200 text-black py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry border border-gray-300';
+        const PENR_CHIP = 'bg-white hover:bg-gray-200 text-black py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry border border-gray-300';
         const ORANGE_BTN = 'w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const ORANGE_CHIP = 'bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         // Google Maps button: Google's brand spectrum (blue→green→yellow→red) via inline gradient.
@@ -533,6 +540,16 @@
             return span;
         };
 
+        // A small "(i)" info icon with a hover tooltip (matches the EC Map button's icon).
+        const makeInfoIcon = (title) => {
+            const d = document.createElement('div');
+            d.className = 'inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0';
+            d.title = title;
+            d.textContent = 'i';
+            return d;
+        };
+        const NEXUS_INFO_TITLE = 'The Information Portal (aka Nexus Portal) contains all publicly available files found in FDEP Oculus for the Subject Facility';
+
         // STCM GIS Layer (FDEP Map Direct) for a FACID — new tab.
         const buildGisButton = (facid, isBrowserView) => {
             const btn = document.createElement('button');
@@ -556,7 +573,44 @@
             return [btn];
         };
 
-        // Folio: Property Appraiser (new tab) + ECM/CARA (iframe). Returns [PA, ECM].
+        // Nexus / FDEP Information Portal search by FACID (loads in the in-tool browser). Green, with (i).
+        const buildNexusFacidButton = (facid, isBrowserView) => {
+            const btn = document.createElement('button');
+            if (isBrowserView) {
+                btn.className = GREEN_CHIP;
+                btn.textContent = `Info Portal: ${facid}`;
+            } else {
+                btn.className = GREEN_BTN + ' flex items-center justify-center gap-2';
+                const lbl = document.createElement('span');
+                lbl.textContent = `Search FDEP Information Portal for Oculus Files (${facid})`;
+                btn.appendChild(lbl);
+                btn.appendChild(makeInfoIcon(NEXUS_INFO_TITLE));
+            }
+            btn.onclick = () => {
+                const url = facidBaseURL.replace('@', facid);
+                resultsIframe.src = url;
+                searchFormView.classList.add('hidden');
+                browserView.classList.remove('hidden');
+                copyLinkButton.dataset.url = url;
+                copyLinkButton.classList.remove('hidden');
+                addressTransferControls.classList.remove('hidden');
+                folioTransferControls.classList.add('hidden');
+            };
+            return [btn];
+        };
+
+        // Search FDEP Nexus Portal by facility address (new tab). Green. [] if no address on file.
+        const buildNexusAddrButton = (facid, isBrowserView) => {
+            const rec = mdcByFacid[facid];
+            if (!rec || !rec.a) return [];
+            const btn = document.createElement('button');
+            btn.className = isBrowserView ? GREEN_CHIP : GREEN_BTN;
+            btn.textContent = isBrowserView ? `Nexus by Address (${rec.a})` : `Search Nexus Portal by Address (${rec.a})`;
+            btn.onclick = () => { window.open(nexusAddrBaseURL + encodeURIComponent(rec.a), '_blank'); };
+            return [btn];
+        };
+
+        // Folio Property Appraiser button.
         const buildFolioButtons = (folio, isBrowserView) => {
             const cleanFolio = folio.replace(/[^0-9]/g, '');
             const paBtn = document.createElement('button');
@@ -647,13 +701,7 @@
                 window.open(earthBaseURL.replace('@', plusFormatted), '_blank');
             };
 
-            // Search FDEP Nexus Portal by facility address (from the Arcade framework).
-            const nxBtn = document.createElement('button');
-            nxBtn.className = isBrowserView ? GREEN_CHIP : GREEN_BTN;
-            nxBtn.textContent = isBrowserView ? `Nexus by Address (${rec.a})` : `Search Nexus Portal by Address (${rec.a})`;
-            nxBtn.onclick = () => { window.open(nexusAddrBaseURL + encodeURIComponent(rec.a), '_blank'); };
-
-            return [paBtn, ecBtn, gmBtn, geBtn, nxBtn];
+            return [paBtn, ecBtn, gmBtn, geBtn];
         };
 
         // Facility Information button + toggle table (form view only). [] if no eligibility data.
@@ -723,8 +771,11 @@
                 btn.className = 'bg-teal-600 hover:bg-teal-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
                 btn.textContent = `CAP to Date (${facid})`;
             } else {
-                btn.className = 'w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-                btn.textContent = `CAP to Date Report (${facid})`;
+                btn.className = 'w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
+                const capLbl = document.createElement('span');
+                capLbl.textContent = `CAP to Date Report (${facid})`;
+                btn.appendChild(capLbl);
+                btn.appendChild(makeInfoIcon('This is a report on the FDEP website.'));
             }
             btn.onclick = () => {
                 const form = document.createElement('form');
@@ -751,8 +802,11 @@
                 btn.className = 'bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
                 btn.textContent = `Compliance (${facid})`;
             } else {
-                btn.className = 'w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-                btn.textContent = `Compliance History (${facid})`;
+                btn.className = 'w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
+                const compLbl = document.createElement('span');
+                compLbl.textContent = `Compliance History (${facid})`;
+                btn.appendChild(compLbl);
+                btn.appendChild(makeInfoIcon('This is a report on the FDEP website and takes a moment to load.'));
             }
             btn.onclick = () => {
                 // Mirrors the FIRST "Facility Journal Report" form exactly: POST facid (utf-8) to a new tab.
@@ -879,12 +933,11 @@
             const nodes = [];
             buildSharedAddressButton(facid, isBrowserView).forEach(n => nodes.push(n));
             buildSharedFolioButton(folio, isBrowserView).forEach(n => nodes.push(n));
-            const [paBtn, ecBtn, gmBtn, geBtn, nxBtn] = buildAddressButtons(facid, isBrowserView);
+            const [paBtn, ecBtn, gmBtn, geBtn] = buildAddressButtons(facid, isBrowserView);
             buildGisButton(facid, isBrowserView).forEach(n => nodes.push(n));   // STCM GIS Layer (above EC Map)
             if (ecBtn) nodes.push(ecBtn);   // EC Map
             if (gmBtn) nodes.push(gmBtn);   // Google Maps
             if (geBtn) nodes.push(geBtn);   // Google Earth
-            if (nxBtn) nodes.push(nxBtn);   // Search Nexus Portal by Address
             if (paBtn) nodes.push(paBtn);   // Address via Property Appraiser (above Folio)
             if (folio) buildFolioButtons(folio, isBrowserView).forEach(n => nodes.push(n));
             if (folio && isBrowserView) buildFolioEcmButton(folio, true).forEach(n => nodes.push(n));
@@ -916,28 +969,11 @@
                         // Browser view lays buttons out as a wrapping chip row; form view stacks them.
                         wrapper.className = isBrowserView ? 'flex flex-wrap items-center gap-2 facid-entry' : 'flex flex-col space-y-4 w-full facid-entry';
 
-                        // 1) Nexus STCM FACID search button(s) [green]
+                        // 1) Nexus / Information Portal search button(s) [green], each with Nexus-by-Address below it
                         if (hasFacids) {
                             deps.forEach(id => {
-                                const btn = document.createElement('button');
-                                if (isBrowserView) {
-                                    btn.className = 'bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap';
-                                    btn.textContent = `FACID: ${id}`;
-                                } else {
-                                    btn.className = 'w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200';
-                                    btn.textContent = `Search Nexus Portal for FDEP Facility ${id}`;
-                                }
-                                btn.onclick = () => {
-                                    const url = facidBaseURL.replace('@', id);
-                                    resultsIframe.src = url;
-                                    searchFormView.classList.add('hidden');
-                                    browserView.classList.remove('hidden');
-                                    copyLinkButton.dataset.url = url; 
-                                    copyLinkButton.classList.remove('hidden');
-                                    addressTransferControls.classList.remove('hidden');
-                                    folioTransferControls.classList.add('hidden');
-                                };
-                                wrapper.appendChild(btn);
+                                buildNexusFacidButton(id, isBrowserView).forEach(n => wrapper.appendChild(n));
+                                buildNexusAddrButton(id, isBrowserView).forEach(n => wrapper.appendChild(n));
                             });
 
                             if (!isBrowserView && deps.length > 1) {
@@ -1013,9 +1049,15 @@
         const updateFacidStack = () => {
             facidStackContainer.innerHTML = '';
             setFolioEcm(facidFolioEcmContainer, null);
+            facidNexusAddrContainer.innerHTML = '';
+            facidNexusAddrContainer.classList.add('hidden');
+            facidSearchLabel.textContent = 'Search FDEP Information Portal for Oculus Files';
             let id = facidInput.value.replace(/[^0-9]/g, '');
             if (id.length !== 7 && id.length !== 9) return;
             const facid = id.length === 9 ? id.substring(2) : id;
+            facidSearchLabel.textContent = `Search FDEP Information Portal for Oculus Files (${facid})`;
+            buildNexusAddrButton(facid, false).forEach(n => facidNexusAddrContainer.appendChild(n));
+            if (facidNexusAddrContainer.children.length) facidNexusAddrContainer.classList.remove('hidden');
             const wgNums = findWGsByFacid(facid);
             const folio = wgNums.length > 0 ? getFolio('UT', wgNums[0]) : undefined;
             setFolioEcm(facidFolioEcmContainer, folio);

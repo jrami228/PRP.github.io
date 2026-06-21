@@ -42,6 +42,9 @@
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Focus mode: hide every generated result button except the warning buttons. */
+        .focus-warnings .facid-entry:not(.warning-entry) { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
@@ -56,7 +59,7 @@
             <div class="space-y-8 w-full max-md">
 
                 <!-- 1. Case Number Search Section (ECM/CARA) -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
+                <div id="wg-section" class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-blue-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-9 0V3h4m-4 2h4m-2 2h2m-6 0v2m0 4v2m0 4v2m4-10h2m0 4h2m0 4h2" />
@@ -79,8 +82,11 @@
 
                     <div class="flex flex-col">
                         <label for="case-number" class="text-gray-400 text-sm mb-2">Work Group Number</label>
-                        <input type="number" id="case-number" placeholder="e.g., 557 (no leading zeros)" 
-                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center">
+                        <div class="flex items-stretch gap-2">
+                            <input type="number" id="case-number" placeholder="e.g., 557 (no leading zeros)" 
+                                   class="flex-1 min-w-0 bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-center">
+                            <div id="wg-warning-icons" class="flex items-stretch gap-2"></div>
+                        </div>
                     </div>
 
                     <button id="case-search-button" disabled 
@@ -107,7 +113,7 @@
                 </div>
 
                 <!-- 2. FDEP Information Portal -->
-                <div class="space-y-4 border-b border-gray-700 pb-8">
+                <div id="fdep-section" class="space-y-4 border-b border-gray-700 pb-8">
                     <h2 class="text-xl font-bold text-green-400 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -117,8 +123,11 @@
 
                     <div class="flex flex-col">
                         <label for="facid-input" class="text-gray-400 text-sm mb-2">FDEP Facility ID</label>
-                        <input type="tel" id="facid-input" inputmode="numeric" placeholder="Enter STCM FACID, e.g., 138505326 or 8505326" 
-                               class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
+                        <div class="flex items-stretch gap-2">
+                            <input type="tel" id="facid-input" inputmode="numeric" placeholder="Enter STCM FACID, e.g., 138505326 or 8505326" 
+                                   class="flex-1 min-w-0 bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 text-center">
+                            <div id="facid-warning-icons" class="flex items-stretch gap-2"></div>
+                        </div>
                     </div>
 
                     <button id="facid-search-button" disabled 
@@ -427,6 +436,10 @@
         const facidStackContainer = document.getElementById('facid-stack-container');
         const facidSearchLabel = document.getElementById('facid-search-label');
         const facidNexusAddrContainer = document.getElementById('facid-nexus-addr-container');
+        const wgWarningIcons = document.getElementById('wg-warning-icons');
+        const facidWarningIcons = document.getElementById('facid-warning-icons');
+        const wgSection = document.getElementById('wg-section');
+        const fdepSection = document.getElementById('fdep-section');
         const wgFolioEcmContainer = document.getElementById('wg-folio-ecm-container');
         const facidFolioEcmContainer = document.getElementById('facid-folio-ecm-container');
         const facnameInput = document.getElementById('facname-input');
@@ -502,14 +515,14 @@
         const GMAPS_CHIP = 'text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         const GMAPS_GRADIENT = 'linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335)';
         // Red disclaimer/alert button (shared-address warning).
-        const ALERT_BTN = 'w-full bg-red-700 hover:bg-red-800 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2 border border-red-400';
+        const ALERT_BTN = 'w-full bg-red-700 hover:bg-red-800 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry warning-entry flex items-center justify-center gap-2 border border-red-400';
         // Blue, matching the "Search ECM/CARA" button (used by "Search ECM/CARA by Folio").
         const BLUE_BTN = 'w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const BLUE_CHIP = 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         const GREEN_BTN = 'w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const GREEN_CHIP = 'bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         // Amber disclaimer/alert button (shared-folio warning) — distinct from the red shared-address alert.
-        const ALERT_AMBER_BTN = 'w-full bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2 border border-amber-300';
+        const ALERT_AMBER_BTN = 'w-full bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry warning-entry flex items-center justify-center gap-2 border border-amber-300';
 
         // Clipboard copy (works in non-secure contexts via fallback).
         const fallbackCopy = (text) => {
@@ -580,6 +593,36 @@
             wrap.appendChild(tip);
             wrap.addEventListener('click', (e) => e.stopPropagation());
             return wrap;
+        };
+
+        // Warning triangle (same glyph as the alert buttons).
+        const WARN_TRIANGLE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path></svg>';
+
+        // A triangle toggle (lives in the search-box row). Clicking it collapses every generated
+        // result button in `sectionEl` EXCEPT the warning buttons; clicking again restores them.
+        const makeWarningToggle = (color, sectionEl) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            const colorCls = color === 'red'
+                ? 'border-red-500 text-red-400 hover:bg-red-900/40'
+                : 'border-amber-500 text-amber-400 hover:bg-amber-900/40';
+            btn.className = 'shrink-0 px-3 flex items-center justify-center rounded-lg border-2 transition duration-200 ' + colorCls;
+            btn.title = (color === 'red' ? 'Address contains multiple FDEP sites' : 'Folio shared by multiple work groups') + ' \u2014 hide/show the other result buttons';
+            btn.innerHTML = WARN_TRIANGLE_SVG;
+            btn.addEventListener('click', () => {
+                const on = sectionEl.classList.toggle('focus-warnings');
+                btn.classList.toggle('ring-2', on);
+                btn.classList.toggle(color === 'red' ? 'ring-red-400' : 'ring-amber-400', on);
+            });
+            return btn;
+        };
+
+        // (Re)populate a search row's icon container; always starts a render expanded (focus mode off).
+        const setWarningIcons = (container, sectionEl, hasAddr, hasFolio) => {
+            container.innerHTML = '';
+            sectionEl.classList.remove('focus-warnings');
+            if (hasAddr) container.appendChild(makeWarningToggle('red', sectionEl));
+            if (hasFolio) container.appendChild(makeWarningToggle('amber', sectionEl));
         };
 
         // STCM GIS Layer (FDEP Map Direct) for a FACID — new tab.
@@ -654,8 +697,14 @@
         const buildFolioButtons = (folio, isBrowserView) => {
             const cleanFolio = folio.replace(/[^0-9]/g, '');
             const paBtn = document.createElement('button');
-            paBtn.className = isBrowserView ? PA_CHIP : PA_BTN;
-            paBtn.textContent = isBrowserView ? `Folio PA: ${folio}` : `Search Folio via Property Appraiser (${folio})`;
+            paBtn.className = (isBrowserView ? PA_CHIP : PA_BTN) + ' flex items-center gap-2';
+            const lbl = document.createElement('span');
+            lbl.textContent = isBrowserView ? `Folio PA: ${folio}` : `Search Folio via Property Appraiser (${folio})`;
+            paBtn.appendChild(lbl);
+            const copyIcon = makeCopyIcon(folio);
+            copyIcon.classList.add('ml-auto');
+            copyIcon.title = 'Copy folio';
+            paBtn.appendChild(copyIcon);
             paBtn.onclick = () => { window.open(folioBaseURL.replace('@', cleanFolio), '_blank'); };
             return [paBtn];
         };
@@ -900,7 +949,7 @@
             btn.appendChild(chevron);
 
             const box = document.createElement('div');
-            box.className = 'hidden mt-3 facid-entry';
+            box.className = 'hidden mt-3 facid-entry warning-entry';
             const rowsHtml = grp.sites.map(s => {
                 const href = (s.db === 'ERIC')
                     ? ericBaseURL.replace('@', s.id.replace(/\D/g, ''))
@@ -949,7 +998,7 @@
             btn.appendChild(chevron);
 
             const box = document.createElement('div');
-            box.className = 'hidden mt-3 facid-entry';
+            box.className = 'hidden mt-3 facid-entry warning-entry';
             const rowsHtml = list.map(e => {
                 const fac = (e.wg === 'UT') ? (utMapping[e.num] && utMapping[e.num][0]) : '';
                 const name = fac && mdcByFacid[fac] ? mdcByFacid[fac].n : '';
@@ -1004,6 +1053,7 @@
             liveFacidContainer.innerHTML = '';
             browserFacidContainer.innerHTML = '';
             setFolioEcm(wgFolioEcmContainer, null);
+            setWarningIcons(wgWarningIcons, wgSection, false, false);
 
             if (number !== '') {
                 // FACID stack exists only for UT; folios exist for UT, IW5, SW, HWR, IW.
@@ -1012,12 +1062,16 @@
                 setFolioEcm(wgFolioEcmContainer, folio);
                 const hasFacids = deps && deps.length > 0;
                 const hasFolio = !!folio;
+                // Triangle toggle(s) in the search row when this search carries a warning.
+                const hasAddrWarn = (group === 'UT') && !!deps && deps.some(id => sharedAddressSites[id]);
+                const hasFolioWarn = !!(folio && sharedFolioMap[folio]);
+                setWarningIcons(wgWarningIcons, wgSection, hasAddrWarn, hasFolioWarn);
 
                 if (hasFacids || hasFolio) {
                     const render = (container, isBrowserView = false) => {
                         const wrapper = document.createElement('div');
                         // Browser view lays buttons out as a wrapping chip row; form view stacks them.
-                        wrapper.className = isBrowserView ? 'flex flex-wrap items-center gap-2 facid-entry' : 'flex flex-col space-y-4 w-full facid-entry';
+                        wrapper.className = isBrowserView ? 'flex flex-wrap items-center gap-2' : 'flex flex-col space-y-4 w-full';
 
                         // 1) Nexus / Information Portal search button(s) [green], each with Nexus-by-Address below it
                         if (hasFacids) {
@@ -1028,7 +1082,7 @@
 
                             if (!isBrowserView && deps.length > 1) {
                                 const infoIcon = document.createElement('div');
-                                infoIcon.className = 'flex items-center justify-center space-x-2 text-green-300 text-sm italic';
+                                infoIcon.className = 'flex items-center justify-center space-x-2 text-green-300 text-sm italic facid-entry';
                                 infoIcon.innerHTML = `
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1102,6 +1156,7 @@
             facidNexusAddrContainer.innerHTML = '';
             facidNexusAddrContainer.classList.add('hidden');
             facidSearchLabel.textContent = 'Search FDEP Info Portal for Oculus Files';
+            setWarningIcons(facidWarningIcons, fdepSection, false, false);
             let id = facidInput.value.replace(/[^0-9]/g, '');
             if (id.length !== 7 && id.length !== 9) return;
             const facid = id.length === 9 ? id.substring(2) : id;
@@ -1111,6 +1166,8 @@
             const wgNums = findWGsByFacid(facid);
             const folio = wgNums.length > 0 ? getFolio('UT', wgNums[0]) : undefined;
             setFolioEcm(facidFolioEcmContainer, folio);
+            // Triangle toggle(s) in the search row when this search carries a warning.
+            setWarningIcons(facidWarningIcons, fdepSection, !!sharedAddressSites[facid], !!(folio && sharedFolioMap[folio]));
             buildFacidStack(facid, folio, false).forEach(n => facidStackContainer.appendChild(n));
             wgNums.forEach(wgNum => {
                 buildPenrButton('UT', wgNum, false).forEach(n => facidStackContainer.appendChild(n));
@@ -1360,6 +1417,8 @@
             facidStackContainer.innerHTML = '';
             setFolioEcm(wgFolioEcmContainer, null);
             setFolioEcm(facidFolioEcmContainer, null);
+            setWarningIcons(wgWarningIcons, wgSection, false, false);
+            setWarningIcons(facidWarningIcons, fdepSection, false, false);
             facnameResults.innerHTML = '';
             facnameResults.classList.add('hidden');
             facnameCount.textContent = '';

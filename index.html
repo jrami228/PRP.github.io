@@ -73,13 +73,13 @@
                     <div class="flex flex-col">
                         <label for="workgroup" class="text-gray-400 text-sm mb-2">Work Group </label>
                         <select id="workgroup" class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                            <option value="UT" selected>UT</option>
-                            <option value="ARP">ARP</option>
-                            <option value="SW">SW</option>
-                            <option value="HWR">HWR</option>
-                            <option value="IW5">IW5</option>
-                            <option value="IW">IW</option>
                             <option value="AG">AG</option>
+                            <option value="ARP">ARP</option>
+                            <option value="HWR">HWR</option>
+                            <option value="IW">IW</option>
+                            <option value="IW5">IW5</option>
+                            <option value="SW">SW</option>
+                            <option value="UT" selected>UT</option>
                         </select>
                     </div>
 
@@ -239,10 +239,10 @@
                                 Search Address via Property Appraiser
                             </button>
                             <button id="env-search-button" disabled 
-                                    class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
-                                           hover:bg-purple-700 transition duration-200 disabled:opacity-50 flex items-center justify-center gap-2"> 
+                                    class="w-full bg-white text-black border border-gray-300 py-3 px-6 rounded-lg font-bold shadow-md 
+                                           hover:bg-gray-200 transition duration-200 disabled:opacity-50 flex items-center justify-center gap-2"> 
                                 <span>Search Environmental Considerations Map</span>
-                                <div class="inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0" 
+                                <div class="inline-flex items-center justify-center w-5 h-5 border border-gray-600 text-gray-700 rounded-full text-[10px] font-serif italic cursor-help shrink-0" 
                                      title="DERM EC Map will sometimes say error. Click ok on the error and then click the orange search button located at the top left of the page next to the address.">
                                     i
                                 </div>
@@ -280,8 +280,8 @@
                     <input type="tel" id="map-facid-input" inputmode="numeric" placeholder="Enter FACID, e.g., 138505326 or 8505326" 
                            class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 text-center w-full">
                     <button id="map-search-button" disabled 
-                                 class="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-bold shadow-lg 
-                                       hover:bg-red-700 transition duration-200 disabled:opacity-50"> 
+                                 class="w-full bg-white text-black border border-gray-300 py-3 px-6 rounded-lg font-bold shadow-lg 
+                                       hover:bg-gray-200 transition duration-200 disabled:opacity-50"> 
                         Search STCM GIS Layer
                     </button>
                     <div class="flex justify-center pt-2">
@@ -507,12 +507,12 @@
         const PA_BTN = 'w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const PA_CHIP = 'bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
         const INDIGO_BTN = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
-        const GIS_BTN = 'w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-        const GIS_CHIP = 'bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        const GIS_BTN = 'w-full bg-white hover:bg-gray-200 text-black py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry border border-gray-300';
+        const GIS_CHIP = 'bg-white hover:bg-gray-200 text-black py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry border border-gray-300';
         const PENR_BTN = 'w-full bg-white hover:bg-gray-200 text-black py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry border border-gray-300';
         const PENR_CHIP = 'bg-white hover:bg-gray-200 text-black py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry border border-gray-300';
-        const ORANGE_BTN = 'w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-        const ORANGE_CHIP = 'bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+        const ORANGE_BTN = 'w-full bg-white hover:bg-gray-200 text-black py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry border border-gray-300';
+        const ORANGE_CHIP = 'bg-white hover:bg-gray-200 text-black py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry border border-gray-300';
         // Google Maps button: Google's brand spectrum (blue→green→yellow→red) via inline gradient.
         const GMAPS_BTN = 'w-full text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
         const GMAPS_CHIP = 'text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
@@ -563,9 +563,10 @@
         };
 
         // A small "(i)" info icon with a hover tooltip (matches the EC Map button's icon).
-        const makeInfoIcon = (title) => {
+        const makeInfoIcon = (title, onLight) => {
             const d = document.createElement('div');
-            d.className = 'inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0';
+            const tone = onLight ? 'border-gray-600 text-gray-700' : 'border-white';
+            d.className = 'inline-flex items-center justify-center w-5 h-5 border ' + tone + ' rounded-full text-[10px] font-serif italic cursor-help shrink-0';
             d.title = title;
             d.textContent = 'i';
             return d;
@@ -640,7 +641,7 @@
                 const lbl = document.createElement('span');
                 lbl.textContent = `Search STCM GIS Layer (${facid})`;
                 btn.appendChild(lbl);
-                btn.appendChild(makeInfoIcon(GIS_INFO_TITLE));
+                btn.appendChild(makeInfoIcon(GIS_INFO_TITLE, true));
             }
             btn.onclick = () => { window.open(mapBaseURL.replace('@', facid), '_blank'); };
             return [btn];
@@ -674,14 +675,7 @@
                 btn.appendChild(makeInfoIcon(NEXUS_INFO_TITLE));
             }
             btn.onclick = () => {
-                const url = facidBaseURL.replace('@', facid);
-                resultsIframe.src = url;
-                searchFormView.classList.add('hidden');
-                browserView.classList.remove('hidden');
-                copyLinkButton.dataset.url = url;
-                copyLinkButton.classList.remove('hidden');
-                addressTransferControls.classList.remove('hidden');
-                folioTransferControls.classList.add('hidden');
+                openInBrowser(facidBaseURL.replace('@', facid), 'infoportal', { facid, wgNums: findWGsByFacid(facid) });
             };
             return [btn];
         };
@@ -720,14 +714,7 @@
             ecmBtn.className = isBrowserView ? BLUE_CHIP : BLUE_BTN;
             ecmBtn.textContent = isBrowserView ? `ECM/CARA by Folio: ${folio}` : `Search ECM/CARA by Folio (${folio})`;
             ecmBtn.onclick = () => {
-                const url = ecmFolioBaseURL.replace('@@@', cleanFolio);
-                resultsIframe.src = url;
-                searchFormView.classList.add('hidden');
-                browserView.classList.remove('hidden');
-                copyLinkButton.dataset.url = url;
-                copyLinkButton.classList.remove('hidden');
-                folioTransferControls.classList.remove('hidden');
-                addressTransferControls.classList.add('hidden');
+                openInBrowser(ecmFolioBaseURL.replace('@@@', cleanFolio), 'ecm', { facids: findFacidsByFolio(cleanFolio), folio });
             };
             return [ecmBtn];
         };
@@ -741,6 +728,57 @@
             } else {
                 container.classList.add('hidden');
             }
+        };
+
+        // ---- In-tool browser navigation (centralized) ----
+        // UT FACIDs tied to a folio (cross-links from a folio-based ECM search).
+        const findFacidsByFolio = (folio) => {
+            const out = [];
+            const m = folioByWG.UT || {};
+            Object.keys(m).forEach(num => {
+                if (m[num] === folio) (utMapping[num] || []).forEach(f => { if (!out.includes(f)) out.push(f); });
+            });
+            return out;
+        };
+
+        // Reusable "Search ECM/CARA for UT-<wgNum>" button (form button or browser chip).
+        const buildEcmForWgButton = (wgNum, isBrowserView) => {
+            const btn = document.createElement('button');
+            btn.className = isBrowserView ? BLUE_CHIP : BLUE_BTN;
+            btn.textContent = isBrowserView ? `ECM/CARA UT-${wgNum}` : `Search ECM/CARA for UT-${wgNum}`;
+            btn.onclick = () => {
+                openInBrowser(caseBaseURL.replace('PLACEHOLDER', `UT-${padCaseNumber(wgNum)}`), 'ecm',
+                    { facids: utMapping[String(wgNum)] || [], folio: getFolio('UT', wgNum) });
+            };
+            return [btn];
+        };
+
+        // In the in-tool browser, show ONLY copy-link + new-search, plus a minimal cross-navigation set
+        // (no other buttons, no transfer search bars).
+        //   'ecm'        -> Info Portal button(s) for the associated FACID(s) + ECM-by-Folio
+        //   'infoportal' -> Search ECM for the associated WG(s) + Info Portal by Address
+        const setBrowserExtras = (type, ctx) => {
+            ctx = ctx || {};
+            browserFacidContainer.innerHTML = '';
+            folioTransferControls.classList.add('hidden');
+            addressTransferControls.classList.add('hidden');
+            if (type === 'ecm') {
+                (ctx.facids || []).forEach(id => buildNexusFacidButton(id, true).forEach(n => browserFacidContainer.appendChild(n)));
+                if (ctx.folio) buildFolioEcmButton(ctx.folio, true).forEach(n => browserFacidContainer.appendChild(n));
+            } else if (type === 'infoportal') {
+                (ctx.wgNums || []).forEach(wgNum => buildEcmForWgButton(wgNum, true).forEach(n => browserFacidContainer.appendChild(n)));
+                if (ctx.facid) buildNexusAddrButton(ctx.facid, true).forEach(n => browserFacidContainer.appendChild(n));
+            }
+        };
+
+        // Open a URL in the in-tool browser with its minimal control set.
+        const openInBrowser = (url, type, ctx) => {
+            resultsIframe.src = url;
+            searchFormView.classList.add('hidden');
+            browserView.classList.remove('hidden');
+            copyLinkButton.dataset.url = url;
+            copyLinkButton.classList.remove('hidden');
+            setBrowserExtras(type, ctx);
         };
 
         // Address for a FACID: Property Appraiser (+copy icon), EC Map, Google Maps (all new tab). [] if no address.
@@ -768,11 +806,7 @@
                 const ecLabel = document.createElement('span');
                 ecLabel.textContent = 'Search Environmental Considerations Map';
                 ecBtn.appendChild(ecLabel);
-                const ecInfo = document.createElement('div');
-                ecInfo.className = 'inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0';
-                ecInfo.title = 'DERM EC Map will sometimes say error. Click ok on the error and then click the orange search button located at the top left of the page next to the address.';
-                ecInfo.textContent = 'i';
-                ecBtn.appendChild(ecInfo);
+                ecBtn.appendChild(makeInfoIcon('DERM EC Map will sometimes say error. Click ok on the error and then click the orange search button located at the top left of the page next to the address.', true));
             }
             ecBtn.onclick = () => { window.open(envBaseURL.replace('@', encodeURIComponent(cleaned)), '_blank'); };
 
@@ -1112,7 +1146,6 @@
                         container.appendChild(wrapper);
                     };
                     render(liveFacidContainer, false);
-                    render(browserFacidContainer, true);
                 }
             }
         };
@@ -1127,21 +1160,7 @@
 
                 if (wgNums.length > 0) {
                     wgNums.forEach(wgNum => {
-                        const btn = document.createElement('button');
-                        btn.className = 'w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry';
-                        btn.textContent = `Search ECM/CARA for UT-${wgNum}`;
-                        btn.onclick = () => {
-                            const formattedCase = `UT-${padCaseNumber(wgNum)}`;
-                            const url = caseBaseURL.replace('PLACEHOLDER', formattedCase);
-                            resultsIframe.src = url;
-                            searchFormView.classList.add('hidden');
-                            browserView.classList.remove('hidden');
-                            copyLinkButton.dataset.url = url; 
-                            copyLinkButton.classList.remove('hidden');
-                            folioTransferControls.classList.remove('hidden');
-                            addressTransferControls.classList.add('hidden');
-                        };
-                        facidToWgContainer.appendChild(btn);
+                        buildEcmForWgButton(wgNum, false).forEach(n => facidToWgContainer.appendChild(n));
                     });
                 }
             }
@@ -1301,14 +1320,11 @@
 
         // Handlers
         caseSearchButton.addEventListener('click', () => {
-            const url = caseBaseURL.replace('PLACEHOLDER', `${workgroupSelect.value}-${padCaseNumber(caseNumberInput.value)}`);
-            resultsIframe.src = url;
-            searchFormView.classList.add('hidden');
-            browserView.classList.remove('hidden');
-            copyLinkButton.dataset.url = url; 
-            copyLinkButton.classList.remove('hidden');
-            folioTransferControls.classList.remove('hidden');
-            addressTransferControls.classList.add('hidden');
+            const group = workgroupSelect.value;
+            const num = caseNumberInput.value.trim();
+            const url = caseBaseURL.replace('PLACEHOLDER', `${group}-${padCaseNumber(num)}`);
+            const facids = (group === 'UT') ? (utMapping[String(num)] || []) : [];
+            openInBrowser(url, 'ecm', { facids, folio: getFolio(group, num) });
         });
 
         penrSearchButton.addEventListener('click', () => {
@@ -1319,29 +1335,13 @@
         });
 
         facidSearchButton.addEventListener('click', () => {
-            let id = facidInput.value;
-            if (id.length === 9) id = id.substring(2);
-            const url = facidBaseURL.replace('@', id);
-            resultsIframe.src = url;
-            searchFormView.classList.add('hidden');
-            browserView.classList.remove('hidden');
-            copyLinkButton.dataset.url = url;
-            copyLinkButton.classList.remove('hidden');
-            addressTransferControls.classList.remove('hidden');
-            folioTransferControls.classList.add('hidden');
-            
-            browserFacidContainer.innerHTML = '';
+            let id = facidInput.value.replace(/[^0-9]/g, '');
+            const facid = id.length === 9 ? id.substring(2) : id;
+            openInBrowser(facidBaseURL.replace('@', facid), 'infoportal', { facid, wgNums: findWGsByFacid(facid) });
         });
 
         ericSearchButton.addEventListener('click', () => {
-            const url = ericBaseURL.replace('@', ericInput.value.replace(/\D/g, ''));
-            resultsIframe.src = url;
-            searchFormView.classList.add('hidden');
-            browserView.classList.remove('hidden');
-            copyLinkButton.dataset.url = url;
-            copyLinkButton.classList.remove('hidden');
-            
-            browserFacidContainer.innerHTML = '';
+            openInBrowser(ericBaseURL.replace('@', ericInput.value.replace(/\D/g, '')), 'none', {});
         });
 
         folioSearchButton.addEventListener('click', () => {
@@ -1350,14 +1350,7 @@
 
         folioEcmSearchButton.addEventListener('click', () => {
             const cleanFolio = folioInput.value.replace(/[^0-9]/g, '');
-            const url = ecmFolioBaseURL.replace('@@@', cleanFolio);
-            resultsIframe.src = url;
-            searchFormView.classList.add('hidden');
-            browserView.classList.remove('hidden');
-            copyLinkButton.dataset.url = url; 
-            copyLinkButton.classList.remove('hidden');
-            folioTransferControls.classList.remove('hidden');
-            addressTransferControls.classList.add('hidden');
+            openInBrowser(ecmFolioBaseURL.replace('@@@', cleanFolio), 'ecm', { facids: findFacidsByFolio(cleanFolio), folio: cleanFolio });
         });
 
         addressSearchButton.addEventListener('click', () => {

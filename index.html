@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1087,7 +1088,7 @@
                 const fac = (e.wg === 'UT') ? (utMapping[e.num] && utMapping[e.num][0]) : '';
                 const name = fac && mdcByFacid[fac] ? mdcByFacid[fac].n : '';
                 return `<tr class="border-t border-gray-700">` +
-                    `<td class="px-3 py-2 whitespace-nowrap align-top"><button type="button" class="wg-ecm-btn inline-flex items-center px-1.5 py-0.5 rounded bg-amber-600/30 hover:bg-amber-600/60 text-amber-200 font-semibold border border-amber-500/50 cursor-pointer" data-wg="${escapeHtml(e.wg)}" data-num="${escapeHtml(e.num)}" title="Search ECM/CARA for ${escapeHtml(e.wg)}-${escapeHtml(e.num)}">${escapeHtml(e.wg)}-${escapeHtml(e.num)}</button></td>` +
+                    `<td class="px-3 py-2 whitespace-nowrap align-top"><button type="button" class="wg-ecm-btn warning-entry inline-flex items-center px-1.5 py-0.5 rounded bg-amber-600/30 hover:bg-amber-600/60 text-amber-200 font-semibold border border-amber-500/50 cursor-pointer" data-wg="${escapeHtml(e.wg)}" data-num="${escapeHtml(e.num)}" title="Search ECM/CARA for ${escapeHtml(e.wg)}-${escapeHtml(e.num)}">${escapeHtml(e.wg)}-${escapeHtml(e.num)}</button></td>` +
                     `<td class="px-3 py-2 whitespace-nowrap align-top">${fac ? escapeHtml(fac) : '—'}</td>` +
                     `<td class="px-3 py-2 align-top">${name ? escapeHtml(name) : '—'}</td>` +
                     `</tr>`;

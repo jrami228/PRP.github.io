@@ -500,6 +500,14 @@
         const capToDateURL = "https://prodapps.dep.state.fl.us/www_stcm/reports/CapToDate/Cap_to_date";
         // FDEP FIRST "Facility Journal Report" (compliance history) — POST endpoint (form field: facid).
         const journalReportURL = "https://prodapps.dep.state.fl.us/firstreports/reports/journal/results/";
+        // FDEP STCM "Deliverable Status Report" — POST endpoint (the DeliStatus form posts to
+        // "DeliStatus/deli", relative to /www_stcm/reports/). Visible fields: fac, gc, cid, wo, po,
+        // datefrom, dateto, status; DeliStatus.js mirrors each into a hidden query_* twin (used by
+        // the results page's Excel re-run), so both sets are submitted here.
+        const deliStatusURL = "https://prodapps.dep.state.fl.us/www_stcm/reports/DeliStatus/deli";
+        // Deliverable due-date window used by the Deliverable Status button: today -2 yrs to today +2 yrs.
+        const DELI_YEARS_BACK = 2;
+        const DELI_YEARS_FWD = 2;
         // REDD (Repository for Electronic Data Deliverables) — PRP Data Summary date-select page for a
         // facility. @@@ = FACID with the leading 2 digits removed (the app's facid is already 7-digit).
         const reddEddBaseURL = "https://prodapps.dep.state.fl.us/redd/Reports/Completeness_Report/Completeness_DateSelect/PRP/";
@@ -1033,6 +1041,68 @@
             return [btn];
         };
 
+        // MM/DD/YYYY for today shifted by `years` (negative = past). Day is clamped for Feb 29.
+        const deliShiftDate = (years) => {
+            const d = new Date();
+            const day = d.getDate();
+            d.setDate(1);
+            d.setFullYear(d.getFullYear() + years);
+            const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+            d.setDate(Math.min(day, lastDay));
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${mm}/${dd}/${d.getFullYear()}`;
+        };
+
+        // Deliverable Status Report (FDEP STCM) for a FACID. Submits a hidden POST form to a new
+        // tab with the Facility ID filled in and the due-date range set to today -2 yrs / +2 yrs.
+        // Works for any valid FACID, so it is NOT gated on local data.
+        const buildDeliStatusButton = (facid, isBrowserView) => {
+            const btn = document.createElement('button');
+            const datefrom = deliShiftDate(-DELI_YEARS_BACK);
+            const dateto = deliShiftDate(DELI_YEARS_FWD);
+            if (isBrowserView) {
+                btn.className = 'bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
+                btn.textContent = `Deliverable Status (${facid})`;
+            } else {
+                btn.className = 'w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
+                const deliLbl = document.createElement('span');
+                deliLbl.textContent = `Deliverable Status Report (${facid})`;
+                btn.appendChild(deliLbl);
+                btn.appendChild(makeInfoIcon(`This is a report on the FDEP website. Due dates are searched from ${datefrom} to ${dateto} (two years before and after today).`));
+            }
+            btn.onclick = () => {
+                // Mirrors the STCM DeliStatus form: visible fields plus their hidden query_* twins.
+                // STCM expects the 7-digit facility ID (county code dropped), same as the EDD button.
+                const shortId = facid.length === 9 ? facid.substring(2) : facid;
+                const fields = {
+                    fac: shortId, gc: '', cid: '', wo: '', po: '',
+                    datefrom: datefrom, dateto: dateto, status: ''
+                };
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deliStatusURL;
+                form.target = '_blank';
+                form.acceptCharset = 'utf-8';
+                const addField = (name, value) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = value;
+                    form.appendChild(input);
+                };
+                Object.entries(fields).forEach(([name, value]) => {
+                    addField(name, value);
+                    addField('query_' + name, value);
+                });
+                addField('excel_output', 'N');
+                document.body.appendChild(form);
+                form.submit();
+                setTimeout(() => { if (form.parentNode) form.parentNode.removeChild(form); }, 2000);
+            };
+            return [btn];
+        };
+
         // FDEP FIRST "Facility Journal Report" (compliance history) for a FACID. Submits a hidden
         // POST form (field: facid) to a new tab — works for any valid FACID, so not gated on data.
         // REDD PRP Data Summary date-select page (EDD data) for a facility.
@@ -1190,7 +1260,8 @@
         // Unified FACID-derived button stack used by BOTH the Work Group and FDEP Facility ID
         // sections. Order: shared-address alert, shared-folio alert, STCM GIS Layer, EC Map,
         // Google Maps, Google Earth, Nexus by Address, Address PA, Folio PA, Facility Information
-        // (form only), CAP to Date, Compliance History. `folio` optional (folio buttons only if set).
+        // (form only), CAP to Date, Deliverable Status, Compliance History. `folio` optional (folio
+        // buttons only if set).
         const buildFacidStack = (facid, folio, isBrowserView) => {
             const nodes = [];
             buildSharedAddressButton(facid, isBrowserView).forEach(n => nodes.push(n));
@@ -1204,6 +1275,7 @@
             if (folio && isBrowserView) buildFolioEcmButton(folio, true).forEach(n => nodes.push(n));
             if (!isBrowserView) buildInfoButton(facid, '').forEach(n => nodes.push(n));
             buildCapToDateButton(facid, isBrowserView).forEach(n => nodes.push(n));
+            buildDeliStatusButton(facid, isBrowserView).forEach(n => nodes.push(n));
             buildComplianceButton(facid, isBrowserView).forEach(n => nodes.push(n));
             buildEddButton(facid, isBrowserView).forEach(n => nodes.push(n));
             return nodes;

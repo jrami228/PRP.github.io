@@ -138,6 +138,7 @@
                                        hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
                                        focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 
                                        disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"> 
+                        <div id="facid-copy-slot" class="flex items-center"></div>
                         <span id="facid-search-label">Search FDEP Info Portal for Oculus Files</span>
                         <div class="inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-help shrink-0"
                              title="The Information Portal (aka Nexus Portal) contains all publicly available files found in FDEP Oculus for the Subject Facility">i</div>
@@ -176,7 +177,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        Find Facility by Name
+                        <span id="facname-heading">Find Facility by Name</span>
                         <div class="relative group ml-2 cursor-help">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -185,12 +186,24 @@
                                 Type any part of a facility name to find Miami-Dade County (County 13) FDEP facilities. Tap a result to load its Facility ID above.
                             </div>
                         </div>
+                        <button id="sunshine-toggle" type="button"
+                                class="ml-auto text-[11px] font-semibold px-2 py-1 rounded-md bg-orange-600/30 hover:bg-orange-600/60 text-orange-200 border border-orange-500/50 transition duration-200 whitespace-nowrap">
+                            or Sunshine Search Only
+                        </button>
                     </h2>
 
                     <div class="flex flex-col">
+                        <div id="facname-input-wrap">
                         <input type="text" id="facname-input" placeholder="Start typing a facility name, e.g., SAFARI" 
                                autocomplete="off"
                                class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-200 w-full">
+                        </div>
+                        <div id="sunshine-input-wrap" class="hidden">
+                            <label for="sunshine-input" class="text-gray-400 text-sm mb-2 block">Sunshine Number (digits only)</label>
+                            <input type="tel" id="sunshine-input" inputmode="numeric" autocomplete="off"
+                                   placeholder="e.g., 1, 09, 158, 30028"
+                                   class="bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-200 w-full text-center">
+                        </div>
                         <div id="facname-count" class="text-orange-300 text-xs mt-2 h-4"></div>
                         <div id="facname-results" class="mt-1 max-h-72 overflow-y-auto rounded-lg divide-y divide-gray-700 border border-gray-700 hidden"></div>
                     </div>
@@ -438,6 +451,7 @@
         const facidToWgContainer = document.getElementById('facid-to-wg-container');
         const facidStackContainer = document.getElementById('facid-stack-container');
         const facidSearchLabel = document.getElementById('facid-search-label');
+        const facidCopySlot = document.getElementById('facid-copy-slot');
         const facidNexusAddrContainer = document.getElementById('facid-nexus-addr-container');
         const wgWarningIcons = document.getElementById('wg-warning-icons');
         const facidWarningIcons = document.getElementById('facid-warning-icons');
@@ -448,6 +462,11 @@
         const facnameInput = document.getElementById('facname-input');
         const facnameResults = document.getElementById('facname-results');
         const facnameCount = document.getElementById('facname-count');
+        const sunshineToggle = document.getElementById('sunshine-toggle');
+        const sunshineInput = document.getElementById('sunshine-input');
+        const facnameHeading = document.getElementById('facname-heading');
+        const facnameInputWrap = document.getElementById('facname-input-wrap');
+        const sunshineInputWrap = document.getElementById('sunshine-input-wrap');
 
         const facidInput = document.getElementById('facid-input');
         const facidSearchButton = document.getElementById('facid-search-button');
@@ -551,10 +570,10 @@
         const COPY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>';
         const CHECK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>';
         // A small copy icon (two overlapping squares) that copies `text` without triggering the parent button.
-        const makeCopyIcon = (text) => {
+        const makeCopyIcon = (text, title) => {
             const span = document.createElement('span');
             span.className = 'shrink-0 cursor-pointer text-white/80 hover:text-white';
-            span.title = 'Copy address';
+            span.title = title || 'Copy address';
             span.innerHTML = COPY_SVG;
             span.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -675,6 +694,7 @@
                 btn.textContent = `Info Portal: ${facid}`;
             } else {
                 btn.className = GREEN_BTN + ' flex items-center gap-2';
+                btn.appendChild(makeCopyIcon(facid, 'Copy FACID'));
                 const lbl = document.createElement('span');
                 lbl.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
                 btn.appendChild(lbl);
@@ -790,16 +810,64 @@
         // (no other buttons, no transfer search bars).
         //   'ecm'        -> Info Portal button(s) for the associated FACID(s) + ECM-by-Folio
         //   'infoportal' -> Search ECM for the associated WG(s) + Info Portal by Address
+        // Purple "PA" dropdown (browser view): Property Appraiser lookups pre-loaded with the folio
+        // and address tied to the facility currently open in the in-tool browser.
+        const buildPaDropdown = (folio, address) => {
+            if (!folio && !address) return [];
+            const wrap = document.createElement('div');
+            wrap.className = 'relative';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.title = 'Property Appraiser search for this facility';
+            btn.className = 'bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg font-bold shadow-xl transition duration-200 text-xs whitespace-nowrap flex items-center gap-1';
+            btn.innerHTML = '<span>PA</span><span class="text-[10px] leading-none">&#9662;</span>';
+            const panel = document.createElement('div');
+            panel.className = 'pa-panel hidden absolute left-0 top-full mt-1 w-72 bg-gray-800 border border-gray-600 rounded-lg shadow-2xl z-50 overflow-hidden';
+            const addItem = (title, value, onPick) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'w-full text-left px-3 py-2 hover:bg-purple-700 transition duration-150 border-b border-gray-700 last:border-b-0';
+                item.innerHTML = `<div class="text-xs font-bold text-white">${title}</div>` +
+                                 `<div class="text-[11px] text-purple-200 mt-0.5 break-words">${escapeHtml(value)}</div>`;
+                item.onclick = () => { panel.classList.add('hidden'); onPick(); };
+                panel.appendChild(item);
+            };
+            if (folio) addItem('Search by Folio', folio, () => window.open(folioBaseURL.replace('@', folio.replace(/[^0-9]/g, '')), '_blank'));
+            if (address) addItem('Search by Address', address, () => window.open(addressBaseURL.replace('@', encodeURIComponent(cleanAddressOrdinals(address))), '_blank'));
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const wasHidden = panel.classList.contains('hidden');
+                document.querySelectorAll('.pa-panel').forEach(p => p.classList.add('hidden'));
+                if (wasHidden) panel.classList.remove('hidden');
+            };
+            wrap.appendChild(btn);
+            wrap.appendChild(panel);
+            return [wrap];
+        };
+
         const setBrowserExtras = (type, ctx) => {
             ctx = ctx || {};
             browserFacidContainer.innerHTML = '';
             folioTransferControls.classList.add('hidden');
             addressTransferControls.classList.add('hidden');
+            let paFolio = null, paAddr = null;
             if (type === 'ecm') {
+                paFolio = ctx.folio || null;
+                (ctx.facids || []).some(id => {
+                    const rec = mdcByFacid[id];
+                    if (rec && rec.a) { paAddr = rec.a; return true; }
+                    return false;
+                });
+                buildPaDropdown(paFolio, paAddr).forEach(n => browserFacidContainer.appendChild(n));
                 (ctx.facids || []).forEach(id => buildNexusFacidButton(id, true).forEach(n => browserFacidContainer.appendChild(n)));
                 if (ctx.folio) buildFolioEcmButton(ctx.folio, true).forEach(n => browserFacidContainer.appendChild(n));
             } else if (type === 'infoportal') {
-                (ctx.wgNums || []).forEach(wgNum => buildEcmForWgButton(wgNum, true).forEach(n => browserFacidContainer.appendChild(n)));
+                const rec = mdcByFacid[ctx.facid];
+                paAddr = (rec && rec.a) ? rec.a : null;
+                const wgs = ctx.wgNums || [];
+                for (const w of wgs) { const f = getFolio('UT', w); if (f) { paFolio = f; break; } }
+                buildPaDropdown(paFolio, paAddr).forEach(n => browserFacidContainer.appendChild(n));
+                wgs.forEach(wgNum => buildEcmForWgButton(wgNum, true).forEach(n => browserFacidContainer.appendChild(n)));
                 if (ctx.facid) buildNexusAddrButton(ctx.facid, true).forEach(n => browserFacidContainer.appendChild(n));
             }
         };
@@ -1232,6 +1300,7 @@
         // converting the FACID back to its UT work group (findWGsByFacid).
         const updateFacidStack = () => {
             facidStackContainer.innerHTML = '';
+            facidCopySlot.innerHTML = '';
             setFolioEcm(facidFolioEcmContainer, null);
             facidNexusAddrContainer.innerHTML = '';
             facidNexusAddrContainer.classList.add('hidden');
@@ -1241,6 +1310,7 @@
             if (id.length !== 7 && id.length !== 9) return;
             const facid = id.length === 9 ? id.substring(2) : id;
             facidSearchLabel.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
+            facidCopySlot.appendChild(makeCopyIcon(facid, 'Copy FACID'));
             buildNexusAddrButton(facid, false).forEach(n => facidNexusAddrContainer.appendChild(n));
             if (facidNexusAddrContainer.children.length) facidNexusAddrContainer.classList.remove('hidden');
             const wgNums = findWGsByFacid(facid);
@@ -1259,24 +1329,14 @@
         // into the FDEP Facility ID field above and triggers all FACID-driven buttons.
         const escapeHtml = (str) => str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-        const updateFacnameResults = () => {
-            const q = facnameInput.value.trim().toLowerCase();
+        const renderFacilityMatches = (matches, countText, emptyText) => {
             facnameResults.innerHTML = '';
-            if (q === '') {
-                facnameResults.classList.add('hidden');
-                facnameCount.textContent = '';
-                return;
-            }
-            const matches = mdcFacilities.filter(rec => rec.n.toLowerCase().includes(q));
-            facnameCount.textContent = matches.length === 0
-                ? 'No matching facilities.'
-                : `${matches.length} match${matches.length === 1 ? '' : 'es'}`;
-
             if (matches.length === 0) {
+                facnameCount.textContent = emptyText;
                 facnameResults.classList.add('hidden');
                 return;
             }
-
+            facnameCount.textContent = countText;
             matches.forEach(rec => {
                 const row = document.createElement('button');
                 row.className = 'w-full text-left px-4 py-3 bg-gray-700 hover:bg-orange-600 transition duration-150 facid-entry';
@@ -1292,6 +1352,51 @@
                 facnameResults.appendChild(row);
             });
             facnameResults.classList.remove('hidden');
+        };
+
+        const clearFacilityResults = () => {
+            facnameResults.innerHTML = '';
+            facnameResults.classList.add('hidden');
+            facnameCount.textContent = '';
+        };
+
+        const updateFacnameResults = () => {
+            const q = facnameInput.value.trim().toLowerCase();
+            if (q === '') { clearFacilityResults(); return; }
+            const matches = mdcFacilities.filter(rec => rec.n.toLowerCase().includes(q));
+            renderFacilityMatches(matches, `${matches.length} match${matches.length === 1 ? '' : 'es'}`, 'No matching facilities.');
+        };
+
+        // Sunshine Search by Number: the facility-name search is hard-limited to SUNSHINE + the
+        // typed digits. Exact numeric hits (Sunshine #1 / #01 / 01) sort to the top; digit-substring
+        // hits follow. Names with no number (e.g. SUNSHINE MILLER) are excluded from this mode.
+        const SUNSHINE_RE = /^SUNSHINE\s*#?\s*(\d+)/i;
+        const updateSunshineResults = () => {
+            const q = sunshineInput.value.replace(/\D/g, '');
+            if (q === '') { clearFacilityResults(); return; }
+            const exact = [], partial = [];
+            mdcFacilities.forEach(rec => {
+                const m = rec.n.match(SUNSHINE_RE);
+                if (!m) return;
+                if (parseInt(m[1], 10) === parseInt(q, 10)) exact.push(rec);
+                else if (m[1].includes(q)) partial.push(rec);
+            });
+            const matches = exact.concat(partial);
+            renderFacilityMatches(matches,
+                `${matches.length} match${matches.length === 1 ? '' : 'es'} \u00b7 Sunshine #${q}`,
+                `No Sunshine facility matching "${q}".`);
+        };
+
+        let sunshineMode = false;
+        const setSunshineMode = (on) => {
+            sunshineMode = on;
+            facnameInputWrap.classList.toggle('hidden', on);
+            sunshineInputWrap.classList.toggle('hidden', !on);
+            facnameHeading.textContent = on ? 'Sunshine Search by Number' : 'Find Facility by Name';
+            sunshineToggle.textContent = on ? 'or Facility Name Search' : 'or Sunshine Search Only';
+            facnameInput.value = '';
+            sunshineInput.value = '';
+            clearFacilityResults();
         };
 
         // Listeners
@@ -1329,6 +1434,18 @@
             updateFacidStack();
         });
         facnameInput.addEventListener('input', updateFacnameResults);
+        sunshineInput.addEventListener('input', () => {
+            sunshineInput.value = sunshineInput.value.replace(/\D/g, '');
+            updateSunshineResults();
+        });
+        sunshineToggle.addEventListener('click', () => {
+            setSunshineMode(!sunshineMode);
+            (sunshineMode ? sunshineInput : facnameInput).focus();
+        });
+        // Close any open PA dropdown on an outside click.
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.pa-panel').forEach(p => p.classList.add('hidden'));
+        });
         ericInput.addEventListener('input', () => {
             ericSearchButton.disabled = ericInput.value.replace(/\D/g, '').length === 0;
         });
@@ -1464,6 +1581,9 @@
             addressInput.value = '';
             mapFacidInput.value = '';
             facnameInput.value = '';
+            sunshineInput.value = '';
+            facidCopySlot.innerHTML = '';
+            setSunshineMode(false);
             caseSearchButton.disabled = penrSearchButton.disabled = facidSearchButton.disabled = ericSearchButton.disabled = folioSearchButton.disabled = folioEcmSearchButton.disabled = addressSearchButton.disabled = envSearchButton.disabled = earthSearchButton.disabled = gmapsAddrSearchButton.disabled = mapSearchButton.disabled = true;
             liveFacidContainer.innerHTML = '';
             browserFacidContainer.innerHTML = '';

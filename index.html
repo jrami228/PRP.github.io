@@ -145,7 +145,7 @@
                     </button>
 
                     <!-- Search Nexus Portal by Address — immediately below the FACID Information Portal search -->
-                    <div id="facid-nexus-addr-container" class="hidden mt-4"></div>
+                    <div id="facid-nexus-addr-container" class="hidden mt-4 flex flex-col space-y-4"></div>
 
                     <!-- FACID to Workgroup Reverse Lookup Container -->
                     <div id="facid-to-wg-container" class="space-y-4 mt-4"></div>
@@ -234,7 +234,7 @@
                             <button id="folio-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
                                            hover:bg-purple-700 transition duration-200 disabled:opacity-50"> 
-                                Search Folio via Property Appraiser
+                                Search Folio on Property Appraiser
                             </button>
                             <button id="folio-ecm-search-button" disabled 
                                     class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
@@ -249,7 +249,7 @@
                             <button id="address-search-button" disabled 
                                     class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-bold shadow-md 
                                            hover:bg-purple-700 transition duration-200 disabled:opacity-50"> 
-                                Search Address via Property Appraiser
+                                Search Address on Property Appraiser
                             </button>
                             <button id="env-search-button" disabled 
                                     class="w-full bg-white text-black border border-gray-300 py-3 px-6 rounded-lg font-bold shadow-md 
@@ -508,6 +508,61 @@
         // Deliverable due-date window used by the Deliverable Status button: today -2 yrs to today +2 yrs.
         const DELI_YEARS_BACK = 2;
         const DELI_YEARS_FWD = 2;
+        // FDEP Nexus / Information Portal "Document Search" — POST endpoint (same form as the
+        // searchPortal page: electronicDocument.* fields + newSearch=Yes).
+        const nexusDocSearchURL = "https://prodenv.dep.state.fl.us/DepNexus/public/electronic-documents";
+        // OCULUS taxonomy document types (column B of OculusTaxonomy_1_01.xlsx, de-duplicated,
+        // alphabetical) — the type-ahead source for the Info Portal document-type search.
+        const OCULUS_DOC_TYPES = [
+            "4 - LOG VIRAL INACTIVATION RELATED", "ABILITY TO PAY RELATED", "ACCEPTANCE AND APPROVAL RELATED", "ADDENDA", "ADDENDA REVIEW CHECKLIST",
+            "ADMINISTRATIVE PETITIONS - HEARINGS RELATED", "ALTERNATE PROCEDURE RELATED", "AMORTIZATION SCHEDULE", "ANNUAL REPORT RELATED",
+            "APPLICATION INSUFFICIENCY RELATED", "APPROVAL RELATED", "AS - BUILTS", "ASSET MANAGEMENT/FISCAL SUSTAINABILITY",
+            "ATTORNEY - CLIENT PRIVILEGE RELATED", "AUDIT RELATED", "AUTOMATED E - NOTIFICATION", "BEST MANAGEMENT PRACTICES RELATED",
+            "BID PROJECT RELATED", "BROWNFIELDS AGREEMENTS", "CASE CLOSURE RELATED", "CASE REPORT", "CERCLA SITE EVALUATIONS",
+            "CERTIFIED AND E - MAIL RECEIPT", "CHECKLISTS", "CIVIL COMPLAINT RELATED", "CLEANUP INITIATION RELATED", "CLEANUP REFERRAL PACKET",
+            "CLOSURE RELATED", "COASTS MONITORING RELATED", "COLLECTION - REFUND - WRITE OFF RELATED", "COMMENCEMENT RELATED", "COMMUNITY RELATIONS",
+            "COMPLAINT RELATED", "COMPLETION RELATED", "CONSENT ORDER", "CONSTRUCTION MANAGER AT RISK PACKAGE", "CONSUMER CONFIDENCE REPORT RELATED",
+            "CONTRACT RELATED", "CONTRACTOR DESIGNATION RELATED", "CONTRACTOR PERFORMANCE EVALUATION", "CONTRACTOR QUALIFICATION RELATED",
+            "CORPS COORDINATION", "COST ESTIMATE RELATED", "COST SHARE AGREEMENT RELATED", "CROSS CONNECTION CONTROL RELATED", "DECISION",
+            "DECISION MEMO ROD", "DEDUCTIBLE INFORMATION", "DELEGATION RELATED", "DEPT OF REVENUE (DOR) CORRESPONDENCE", "DISBURSEMENT RELATED",
+            "DISBURSEMENT REQUEST", "DISBURSEMENTS", "DISCHARGE REPORTING RELATED", "DOCUMENT LATE NOTICE", "DSCP APPLICATION FORM",
+            "EDUCATIONAL INFORMATION RELATED", "ELIGIBILITY PACKET RELATED", "ELIGIBILITY REVOCATION", "ENGINEERING REPORTS",
+            "ENGINEERS CERTIFICATION OF COMPLETION/CLEARANCE", "EPA COORDINATION", "ESCROW ACCOUNT RELATED", "ETHANOL / BIODIESEL PROGRAM",
+            "EXCEPTION - VARIANCE RELATED", "FACILITY - PROJECT INFORMATION", "FACILITY - SITE INFORMATION", "FEE REDUCTION RELATED", "FEE RELATED",
+            "FIELD WORK NOTIFICATION", "FILE QA", "FINAL INSPECTION", "FINAL JUDGMENT", "FINAL ORDERS", "FINANCIAL RESPONSIBILITY",
+            "FLAIR OR BANK RECORDS", "FUEL AVAILIBILITY", "GRANT APPLICATIONS - AGREEMENTS", "GRANT REIMBURSEMENT REQUESTS", "GRANT RELATED",
+            "HISTORICAL INSPECTION RECORDS", "HURRICANE", "IMMINENT THREAT INFORMATION", "INCIDENT NOTIFICATION RELATED",
+            "INCIDENT OR MALFUNCTION REPORTING RELATED", "INCIDENT REPORT", "INCOMING CORRESPONDENCE", "INJECTION WELL NOTIFICATION RELATED",
+            "INSPECTION RELATED", "INSPECTION REPORT RELATED", "INSTALLATION RELATED", "INTERIM INSPECTION", "INTERROGATORY", "INVOICE",
+            "INVOICE PACKETS", "INVOICE RELATED", "JUDICIAL CONSENT DECREE", "LAB ANALYTICAL REPORTS", "LEAK AUTOPSY RELATED",
+            "LEGAL CASE TRACKING RELATED", "LIEN - BANKRUPTCY - COST RECOVERY RELATED", "LOAN RELATED", "LOAN REPAYMENT RELATED",
+            "LOAN REPAYMENT RESERVE RELATED", "LOAN STATEMENT", "MAJOR SPILLS", "MECHANICAL INTEGRITY TESTING & REPORTING RELATED", "MEETING RELATED",
+            "MINERAL ACID RELATED", "MISCELLANEOUS", "MITIGATION RELATED", "MONITOR WELL RELATED", "MONITORING PLANS AND REPORTS RELATED",
+            "MONITORING RELATED", "MONITORING WELL RELATED", "MS4 MONITORING PLANS", "NONCOMPETITIVE AND SOLE SOURCE RELATED",
+            "NONCOMPLIANCE RELATED", "NOTICE OF VIOLATION", "NOTIFICATION RELATED", "NPDES PAYMENT RELATED", "NPDES RELATED", "OFFICIAL STATEMENT",
+            "OFFSITE NOTICE RELATED", "ONSITE NOTICE RELATED", "OPERATION AND MAINT - REMEDIAL ACTION RPT RELATED",
+            "OPERATION AND MAINTENANCE MANUAL", "OPERATION AND MAINTENANCE RELATED", "OPERATOR INFORMATION RELATED", "OUTGOING CORRESPONDENCE",
+            "OWNER RELATED", "PENALTY AUTHORIZATION RELATED", "PENALTY RELATED", "PERFORMANCE BASED CLEANUP (PBC) RELATED", "PERFORMANCE TRACK",
+            "PERIODIC SITE REPORTS", "PERMIT RELATED", "PERMITS - PERMIT VARIANCES", "PETROLEUM CLEANUP EQUIPMENT - PROPERTY FORM",
+            "PETROLEUM CLEANUP PARTICIPATION PROGRAM", "PFAS", "PILOT - FEASIBILITY STUDY", "PLANS", "PLANS, SITE MAPS, DRAWINGS",
+            "POTABLE WELL SURVEY - SAMPLING", "PRE - APP ADVANCE CLEANUP RELATED", "PRE - CONSTRUCTION RELATED", "PROFESSIONAL LAND SURVEYS",
+            "PROFESSIONAL SERVICES AGREEMENT", "PROPERTY NUMBER INFORMATION", "PROPOSAL RELATED", "PUBLIC INFORMATION REQUEST RELATED",
+            "PUBLIC NOTICES", "PURCHASE ORDER RELATED", "QUALITY ASSURANCE RELATED", "REFERRAL PACKET RELATED", "REGISTRATION RELATED",
+            "REGULATORY AUTHORITY RELATED", "RELEASE DETECTION RELATED", "REMEDIAL ACTION PLAN RELATED", "REMEDIAL ACTION RELATED",
+            "REPAIRS - MAINTENANCE RELATED", "REQUEST FOR ADDITIONAL INFORMATION", "REQUEST FOR FUNDING", "REQUEST FOR INCLUSION",
+            "RESCISSION RELATED", "RESTRICTIVE COVENANTS - DEED RESTRICTIONS", "REVIEW - CHECKLIST MATERIALS", "REVIEW COMMENTS",
+            "REVIEW FEE RELATED", "REVIEW RELATED", "RISK ASSESSMENT", "RULE EXCEPTION INFORMATION", "SCORING CHECKLIST - PACKET",
+            "SETTLEMENT AGREEMENT - NEGOTIATION - STIPULATION", "SIS REPORT", "SIS REQUEST FOR ASSISTANCE", "SITE ACCESS ORDERS",
+            "SITE ACCESS RELATED", "SITE ASSESSMENT RELATED", "SITE CERTIFICATION RELATED", "SITE CHRONOLOGY", "SITE MAPS - SKETCHES - DRAWINGS",
+            "SITE PHOTOS", "SITE SCORE SHEETS", "SITE SCREENING REPORT", "SITE SPECIFIC ACTIVITY RELATED", "SITE VISIT RELATED",
+            "SOURCE REMOVAL RELATED", "SPECIFICATIONS", "SPILL RELATED", "SSC - COOPERATIVE AGREEEMENT", "STATE INITIATION PACKAGE",
+            "STORM SEWER MAPS", "STORMWATER POLLUTION PREVENTION PLAN", "SUBCONTRACTOR PAYMENTS", "TANK SYSTEM EQUIPMENT APPROVAL",
+            "TANK SYSTEM HAZARDOUS SUBSTANCE RELATED", "TARGETED BROWNFIELDS ASSESSMENT", "TAX CREDIT APPLICATION RELATED",
+            "TAX CREDIT CERTIFICATE RELATED", "TECHNICAL STAFF REPORT", "TEMPORARY USE RELATED", "TERMINAL - BUNKERING RELATED", "TIME EXTENSION",
+            "TOTAL MAXIMUM DAILY LOAD (TMDL) RELATED", "TROPICAL STORM", "TURBIDITY REPORTS", "UTILITY RELATED", "VARIANCE RELATED",
+            "VOLUNTARY CLEANUP AGREEMENT RELATED", "VOLUNTARY CLEANUP TAX CREDIT CERTIFICATE", "VOLUNTARY CLEANUP TAX CREDIT TRANSFER RELATED",
+            "WARNING LETTER", "WASTE MANIFESTS", "WASTE TIRE CONTRACTS", "WELL ABANDONMENT RELATED", "WORK ORDER - TASK ASSIGNMENT RELATED"
+        ];
         // REDD (Repository for Electronic Data Deliverables) — PRP Data Summary date-select page for a
         // facility. @@@ = FACID with the leading 2 digits removed (the app's facid is already 7-digit).
         const reddEddBaseURL = "https://prodapps.dep.state.fl.us/redd/Reports/Completeness_Report/Completeness_DateSelect/PRP/";
@@ -707,10 +762,6 @@
                 lbl.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
                 btn.appendChild(lbl);
                 btn.appendChild(makeInfoIcon(NEXUS_INFO_TITLE));
-                const ci = makeCopyIcon(facidBaseURL.replace('@', facid));
-                ci.title = 'Copy link';
-                ci.classList.add('ml-auto');
-                btn.appendChild(ci);
             }
             btn.onclick = () => {
                 openInBrowser(facidBaseURL.replace('@', facid), 'infoportal', { facid, wgNums: findWGsByFacid(facid) });
@@ -735,7 +786,7 @@
             const paBtn = document.createElement('button');
             paBtn.className = (isBrowserView ? PA_CHIP : PA_BTN) + ' flex items-center gap-2';
             const lbl = document.createElement('span');
-            lbl.textContent = isBrowserView ? `Folio PA: ${folio}` : `Search Folio via Property Appraiser (${folio})`;
+            lbl.textContent = isBrowserView ? `Folio PA: ${folio}` : `Search Folio on Property Appraiser (${folio})`;
             paBtn.appendChild(lbl);
             const copyIcon = makeCopyIcon(folio);
             copyIcon.classList.add('ml-auto');
@@ -899,7 +950,7 @@
             const paBtn = document.createElement('button');
             paBtn.className = (isBrowserView ? PA_CHIP : PA_BTN) + ' flex items-center gap-2';
             const paLabel = document.createElement('span');
-            paLabel.textContent = isBrowserView ? `Address PA: ${rec.a}` : `Search Address via Property Appraiser (${rec.a})`;
+            paLabel.textContent = isBrowserView ? `Address PA: ${rec.a}` : `Search Address on Property Appraiser (${rec.a})`;
             paBtn.appendChild(paLabel);
             const copyIcon = makeCopyIcon(rec.a);
             copyIcon.classList.add('ml-auto');
@@ -1103,6 +1154,271 @@
             return [btn];
         };
 
+        // ---------- FDEP Info Portal: Document Search by FACID + Document Type ----------
+        // One half/half row (like the Google Maps/Earth pair): a document-type box with type-ahead
+        // against the OCULUS taxonomy on the left, the search button on the right. Submits a hidden
+        // POST that mirrors the Nexus "Document Search" form.
+        // Most common searches, alphabetical; OFFSITE NOTICE RELATED is highlighted.
+        const DOC_TYPE_COMMON = [
+            'DISCHARGE REPORTING RELATED',
+            'FIELD WORK NOTIFICATION',
+            'MONITORING PLANS AND REPORTS RELATED',
+            'OFFSITE NOTICE RELATED',
+            'REMEDIAL ACTION PLAN RELATED',
+            'REMEDIAL ACTION RELATED',
+            'REVIEW COMMENTS',
+            'SITE ACCESS RELATED',
+            'SITE ASSESSMENT RELATED',
+            'SOURCE REMOVAL RELATED'
+        ];
+        const DOC_TYPE_HIGHLIGHT = 'OFFSITE NOTICE RELATED';
+        // Nexus caps its Document Type box at 30 characters, so longer taxonomy names are sent as a
+        // 29-character prefix plus '%' (the portal supports the '%' wildcard).
+        const NEXUS_DOC_TYPE_MAXLEN = 30;
+        const docTypeForPost = (value) => {
+            const t = String(value || '').trim().toUpperCase();
+            return t.length <= NEXUS_DOC_TYPE_MAXLEN
+                ? t
+                : t.substring(0, NEXUS_DOC_TYPE_MAXLEN - 1) + '%';
+        };
+
+        // Prefix matches first, then "contains" matches.
+        const docTypeMatches = (query) => {
+            const s = String(query || '').trim().toUpperCase();
+            if (!s) return [];
+            const starts = OCULUS_DOC_TYPES.filter(t => t.startsWith(s));
+            const contains = OCULUS_DOC_TYPES.filter(t => !t.startsWith(s) && t.indexOf(s) !== -1);
+            return starts.concat(contains);
+        };
+
+        const submitNexusDocSearch = (facid, docType) => {
+            const fields = {
+                'electronicDocument.documentType': docTypeForPost(docType),
+                'electronicDocument.dateFrom': '',
+                'electronicDocument.dateTo': '',
+                'electronicDocument.dateReceivedFrom': '',
+                'electronicDocument.dateReceivedTo': '',
+                'electronicDocument.subject': '',
+                'electronicDocument.facilityId': facid,
+                'electronicDocument.permitId': '',
+                'electronicDocument.facilityDistrict': '',
+                'electronicDocument.facilityCounty': '',
+                'electronicDocument.sortCriteria': '',
+                // Division boxes stay unchecked; Nexus reads the __checkbox_ twins to detect that.
+                '__checkbox_electronicDocument.airDivision': 'true',
+                '__checkbox_electronicDocument.waterDivision': 'true',
+                '__checkbox_electronicDocument.wasteDivision': 'true',
+                'newSearch': 'Yes'
+            };
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = nexusDocSearchURL;
+            form.target = '_blank';
+            form.acceptCharset = 'utf-8';
+            Object.entries(fields).forEach(([name, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
+            setTimeout(() => { if (form.parentNode) form.parentNode.removeChild(form); }, 2000);
+        };
+
+        // (i) badge listing the most common document-type searches; each entry is clickable and
+        // drops into `input`. OFFSITE NOTICE RELATED is bold + underlined. The panel opens on hover
+        // but is STICKY: once shown it stays put (mouse can leave freely) until a click lands
+        // outside it, so the list can be read and copied from at leisure.
+        const makeDocTypeInfoIcon = (input) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'relative inline-flex shrink-0';
+            const circle = document.createElement('div');
+            circle.className = 'inline-flex items-center justify-center w-5 h-5 border border-white rounded-full text-[10px] font-serif italic cursor-pointer';
+            circle.textContent = 'i';
+            wrap.appendChild(circle);
+            const tip = document.createElement('div');
+            tip.className = 'absolute bottom-full right-0 mb-2 w-80 p-3 bg-gray-900 text-white text-xs font-normal not-italic rounded-lg shadow-xl border border-gray-600 hidden z-50 text-left leading-relaxed';
+            const head = document.createElement('div');
+            head.className = 'mb-2 font-semibold';
+            head.textContent = 'Most common document type searches (click one to use it):';
+            tip.appendChild(head);
+            const ul = document.createElement('ul');
+            ul.className = 'list-disc pl-4 space-y-1';
+            DOC_TYPE_COMMON.forEach(t => {
+                const li = document.createElement('li');
+                const pick = document.createElement('span');
+                pick.className = 'cursor-pointer hover:text-green-300' +
+                    (t === DOC_TYPE_HIGHLIGHT ? ' font-bold underline' : '');
+                pick.textContent = t;
+                pick.addEventListener('click', () => {
+                    input.value = t;
+                    hideTip();
+                    input.focus();
+                });
+                li.appendChild(pick);
+                ul.appendChild(li);
+            });
+            tip.appendChild(ul);
+            wrap.appendChild(tip);
+
+            // Sticky show/hide. The outside-click listener is only attached while the panel is open.
+            const onDocClick = (e) => { if (!wrap.contains(e.target)) hideTip(); };
+            const showTip = () => {
+                if (!tip.classList.contains('hidden')) return;
+                tip.classList.remove('hidden');
+                // Defer so the click that opened it doesn't immediately close it.
+                setTimeout(() => document.addEventListener('click', onDocClick), 0);
+            };
+            const hideTip = () => {
+                tip.classList.add('hidden');
+                document.removeEventListener('click', onDocClick);
+            };
+            wrap.addEventListener('mouseenter', showTip);
+            // Clicking the badge toggles; either way it must not trigger the parent search button.
+            wrap.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (e.target === circle) {
+                    if (tip.classList.contains('hidden')) showTip(); else hideTip();
+                }
+            });
+            return wrap;
+        };
+
+        const buildDocTypeButton = (facid, isBrowserView) => {
+            const row = document.createElement('div');
+            row.className = isBrowserView
+                ? 'flex items-center gap-2 w-full facid-entry'
+                : 'flex gap-4 w-full facid-entry';
+
+            // ---- left half: document type box with type-ahead ----
+            const wrap = document.createElement('div');
+            wrap.className = 'relative flex-1 min-w-0';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.autocomplete = 'off';
+            input.spellcheck = false;
+            input.placeholder = 'SEARCH DOC TYPE';
+            input.className = isBrowserView
+                ? 'w-full bg-gray-700 text-white text-xs py-2 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200'
+                : 'w-full bg-gray-700 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200';
+            input.style.textTransform = 'uppercase';
+            wrap.appendChild(input);
+
+            const menu = document.createElement('div');
+            menu.className = 'absolute left-0 right-0 top-full mt-1 max-h-56 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 hidden text-left';
+            wrap.appendChild(menu);
+
+            let items = [];
+            let active = -1;
+            const closeMenu = () => {
+                menu.classList.add('hidden');
+                menu.innerHTML = '';
+                items = [];
+                active = -1;
+            };
+            const paintActive = () => {
+                Array.from(menu.children).forEach((el, i) => {
+                    el.classList.toggle('bg-green-700', i === active);
+                });
+                if (active >= 0 && menu.children[active]) {
+                    menu.children[active].scrollIntoView({ block: 'nearest' });
+                }
+            };
+            const openMenu = (matches) => {
+                menu.innerHTML = '';
+                items = matches;
+                active = -1;
+                if (!matches.length) { closeMenu(); return; }
+                matches.forEach((t, i) => {
+                    const opt = document.createElement('div');
+                    opt.className = 'px-3 py-2 text-xs text-gray-200 hover:bg-green-700 cursor-pointer';
+                    opt.textContent = t;
+                    // mousedown (not click) so the pick lands before the input's blur handler runs.
+                    opt.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        input.value = t;
+                        closeMenu();
+                        input.focus();
+                    });
+                    opt.addEventListener('mouseenter', () => { active = i; paintActive(); });
+                    menu.appendChild(opt);
+                });
+                menu.classList.remove('hidden');
+            };
+
+            // Type-ahead: one prefix match completes inline (the added text stays selected, so typing
+            // over it just continues); several matches drop a picker list.
+            let typingForward = true;
+            input.addEventListener('beforeinput', (e) => {
+                typingForward = (e.inputType === 'insertText');
+            });
+            input.addEventListener('input', () => {
+                const s = input.value.trim().toUpperCase();
+                if (!s) { closeMenu(); return; }
+                const prefix = OCULUS_DOC_TYPES.filter(t => t.startsWith(s));
+                if (typingForward && prefix.length === 1 && prefix[0] !== s) {
+                    input.value = prefix[0];
+                    try { input.setSelectionRange(s.length, prefix[0].length); } catch (e) {}
+                    closeMenu();
+                    return;
+                }
+                const matches = docTypeMatches(s);
+                if (matches.length > 1 || (matches.length === 1 && matches[0] !== s)) openMenu(matches);
+                else closeMenu();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    if (menu.classList.contains('hidden')) {
+                        const matches = docTypeMatches(input.value);
+                        if (matches.length) openMenu(matches);
+                        else return;
+                    }
+                    e.preventDefault();
+                    if (!items.length) return;
+                    active = e.key === 'ArrowDown'
+                        ? (active + 1) % items.length
+                        : (active <= 0 ? items.length - 1 : active - 1);
+                    paintActive();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (active >= 0 && items[active]) {
+                        input.value = items[active];
+                        closeMenu();
+                    } else {
+                        closeMenu();
+                        submitNexusDocSearch(facid, input.value);
+                    }
+                } else if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+            input.addEventListener('blur', () => { setTimeout(closeMenu, 150); });
+
+            // ---- right half: the search button ----
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            if (isBrowserView) {
+                btn.className = 'flex-1 min-w-0 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap';
+                btn.textContent = 'Search Info Portal';
+            } else {
+                btn.className = 'flex-1 min-w-0 bg-green-600 hover:bg-green-700 text-white py-3 px-3 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 flex items-center justify-center gap-2';
+                const lbl = document.createElement('span');
+                lbl.textContent = 'Search Info Portal';
+                btn.appendChild(lbl);
+                btn.appendChild(makeDocTypeInfoIcon(input));
+            }
+            btn.onclick = () => {
+                closeMenu();
+                submitNexusDocSearch(facid, input.value);
+            };
+
+            row.appendChild(wrap);
+            row.appendChild(btn);
+            return [row];
+        };
+
         // FDEP FIRST "Facility Journal Report" (compliance history) for a FACID. Submits a hidden
         // POST form (field: facid) to a new tab — works for any valid FACID, so not gated on data.
         // REDD PRP Data Summary date-select page (EDD data) for a facility.
@@ -1260,8 +1576,9 @@
         // Unified FACID-derived button stack used by BOTH the Work Group and FDEP Facility ID
         // sections. Order: shared-address alert, shared-folio alert, STCM GIS Layer, EC Map,
         // Google Maps, Google Earth, Nexus by Address, Address PA, Folio PA, Facility Information
-        // (form only), CAP to Date, Deliverable Status, Compliance History. `folio` optional (folio
-        // buttons only if set).
+        // (form only), CAP to Date, Deliverable Status, Compliance History, EDD Data. `folio`
+        // optional (folio buttons only if set). The Info Portal document-type row is NOT part of
+        // this stack — it renders directly under the by-address button in each section.
         const buildFacidStack = (facid, folio, isBrowserView) => {
             const nodes = [];
             buildSharedAddressButton(facid, isBrowserView).forEach(n => nodes.push(n));
@@ -1270,7 +1587,7 @@
             buildGisButton(facid, isBrowserView).forEach(n => nodes.push(n));   // STCM GIS Layer (above EC Map)
             if (addr.ecBtn) nodes.push(addr.ecBtn);   // EC Map
             addr.mapsEarth.forEach(n => nodes.push(n));   // Google Maps + Google Earth (shared row in form view)
-            if (addr.paBtn) nodes.push(addr.paBtn);   // Address via Property Appraiser (above Folio)
+            if (addr.paBtn) nodes.push(addr.paBtn);   // Address on Property Appraiser (above Folio)
             if (folio) buildFolioButtons(folio, isBrowserView).forEach(n => nodes.push(n));
             if (folio && isBrowserView) buildFolioEcmButton(folio, true).forEach(n => nodes.push(n));
             if (!isBrowserView) buildInfoButton(facid, '').forEach(n => nodes.push(n));
@@ -1308,11 +1625,13 @@
                         // Browser view lays buttons out as a wrapping chip row; form view stacks them.
                         wrapper.className = isBrowserView ? 'flex flex-wrap items-center gap-2' : 'flex flex-col space-y-4 w-full';
 
-                        // 1) Nexus / Information Portal search button(s) [green], each with Nexus-by-Address below it
+                        // 1) Nexus / Information Portal search button(s) [green], each with Nexus-by-Address
+                        //    below it and the document-type search row directly under that.
                         if (hasFacids) {
                             deps.forEach(id => {
                                 buildNexusFacidButton(id, isBrowserView).forEach(n => wrapper.appendChild(n));
                                 buildNexusAddrButton(id, isBrowserView).forEach(n => wrapper.appendChild(n));
+                                buildDocTypeButton(id, isBrowserView).forEach(n => wrapper.appendChild(n));
                             });
 
                             if (!isBrowserView && deps.length > 1) {
@@ -1384,6 +1703,8 @@
             facidSearchLabel.textContent = `Search FDEP Info Portal for Oculus Files (${facid})`;
             facidCopySlot.appendChild(makeCopyIcon(facid, 'Copy FACID'));
             buildNexusAddrButton(facid, false).forEach(n => facidNexusAddrContainer.appendChild(n));
+            // Document-type search always sits directly below the by-address button.
+            buildDocTypeButton(facid, false).forEach(n => facidNexusAddrContainer.appendChild(n));
             if (facidNexusAddrContainer.children.length) facidNexusAddrContainer.classList.remove('hidden');
             const wgNums = findWGsByFacid(facid);
             const folio = wgNums.length > 0 ? getFolio('UT', wgNums[0]) : undefined;

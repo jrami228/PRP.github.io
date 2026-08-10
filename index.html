@@ -500,6 +500,9 @@
         const capToDateURL = "https://prodapps.dep.state.fl.us/www_stcm/reports/CapToDate/Cap_to_date";
         // FDEP FIRST "Facility Journal Report" (compliance history) — POST endpoint (form field: facid).
         const journalReportURL = "https://prodapps.dep.state.fl.us/firstreports/reports/journal/results/";
+        // FDEP FIRST "Cover Page Report" — POST endpoint. NOTE the field name is `facId`
+        // (capital I), unlike the Journal Report's `facid`. Expects the STCM (7-digit) facility ID.
+        const coverPageURL = "https://prodapps.dep.state.fl.us/firstreports/reports/CoverPage/results/";
         // FDEP STCM "Deliverable Status Report" — POST endpoint (the DeliStatus form posts to
         // "DeliStatus/deli", relative to /www_stcm/reports/). Visible fields: fac, gc, cid, wo, po,
         // datefrom, dateto, status; DeliStatus.js mirrors each into a hidden query_* twin (used by
@@ -881,7 +884,7 @@
             btn.className = 'bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg font-bold shadow-xl transition duration-200 text-xs whitespace-nowrap flex items-center gap-1';
             btn.innerHTML = '<span>PA</span><span class="text-[10px] leading-none">&#9662;</span>';
             const panel = document.createElement('div');
-            panel.className = 'pa-panel hidden absolute left-0 top-full mt-1 w-72 bg-gray-800 border border-gray-600 rounded-lg shadow-2xl z-50 overflow-hidden';
+            panel.className = 'dd-panel hidden absolute left-0 top-full mt-1 w-72 bg-gray-800 border border-gray-600 rounded-lg shadow-2xl z-50 overflow-hidden';
             const addItem = (title, value, onPick) => {
                 const item = document.createElement('button');
                 item.type = 'button';
@@ -896,7 +899,7 @@
             btn.onclick = (e) => {
                 e.stopPropagation();
                 const wasHidden = panel.classList.contains('hidden');
-                document.querySelectorAll('.pa-panel').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.dd-panel').forEach(p => p.classList.add('hidden'));
                 if (wasHidden) panel.classList.remove('hidden');
             };
             wrap.appendChild(btn);
@@ -1435,36 +1438,84 @@
             return [btn];
         };
 
+        // Posts a single hidden field to a FIRST report endpoint in a new tab.
+        // FIRST warns these reports can be slow to generate, so the form is kept briefly
+        // after submit to be sure the POST lands before it is torn down.
+        const submitFirstReport = (action, fieldName, value) => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = action;
+            form.target = '_blank';
+            form.acceptCharset = 'utf-8';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = fieldName;
+            input.value = value;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            setTimeout(() => { if (form.parentNode) form.parentNode.removeChild(form); }, 2000);
+        };
+
+        // Compliance History is a dropdown with two FIRST reports:
+        //   Cover Page Report  -> mirrors the FIRST CoverPage form (field: facId, capital I)
+        //   Journal Report     -> the original Compliance History behavior (field: facid)
         const buildComplianceButton = (facid, isBrowserView) => {
+            const wrap = document.createElement('div');
+            wrap.className = isBrowserView ? 'relative facid-entry' : 'relative w-full facid-entry';
+
             const btn = document.createElement('button');
+            btn.type = 'button';
+            const chevron = document.createElement('span');
+            chevron.textContent = '\u25BE';
+            chevron.className = 'text-fuchsia-200 text-xs';
             if (isBrowserView) {
-                btn.className = 'bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap facid-entry';
-                btn.textContent = `Compliance (${facid})`;
+                btn.className = 'bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-2 px-3 rounded-lg font-bold shadow-lg transition duration-200 text-xs whitespace-nowrap flex items-center gap-1';
+                const chipLbl = document.createElement('span');
+                chipLbl.textContent = `Compliance (${facid})`;
+                btn.appendChild(chipLbl);
+                btn.appendChild(chevron);
             } else {
-                btn.className = 'w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 facid-entry flex items-center justify-center gap-2';
+                btn.className = 'w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white py-3 px-6 rounded-lg font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 flex items-center justify-center gap-2';
                 const compLbl = document.createElement('span');
                 compLbl.textContent = `Compliance History (${facid})`;
                 btn.appendChild(compLbl);
-                btn.appendChild(makeInfoIcon('This is a report on the FDEP website and takes a moment to load.'));
+                btn.appendChild(makeInfoIcon('These are reports on the FDEP website and take a moment to load.'));
+                btn.appendChild(chevron);
             }
-            btn.onclick = () => {
-                // Mirrors the FIRST "Facility Journal Report" form exactly: POST facid (utf-8) to a new tab.
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = journalReportURL;
-                form.target = '_blank';
-                form.acceptCharset = 'utf-8';
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'facid';
-                input.value = facid;
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
-                // FIRST warns this report can be slow to generate; keep the form briefly so the POST lands.
-                setTimeout(() => { if (form.parentNode) form.parentNode.removeChild(form); }, 2000);
+
+            const panel = document.createElement('div');
+            panel.className = isBrowserView
+                ? 'dd-panel hidden absolute left-0 top-full mt-1 w-64 bg-gray-800 border border-gray-600 rounded-lg shadow-2xl z-50 overflow-hidden'
+                : 'dd-panel hidden absolute left-0 right-0 top-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-2xl z-50 overflow-hidden';
+
+            const addItem = (title, note, onPick) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'w-full text-left px-3 py-2 hover:bg-fuchsia-700 transition duration-150 border-b border-gray-700 last:border-b-0';
+                item.innerHTML = `<div class="text-xs font-bold text-white">${escapeHtml(title)}</div>` +
+                                 `<div class="text-[11px] text-fuchsia-200 mt-0.5 break-words">${escapeHtml(note)}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); panel.classList.add('hidden'); onPick(); };
+                panel.appendChild(item);
             };
-            return [btn];
+
+            // FIRST's Cover Page form asks for the STCM (7-digit) facility ID.
+            const shortId = facid.length === 9 ? facid.substring(2) : facid;
+            addItem('Cover Page Report', `FDEP FIRST \u00b7 STCM Facility ID ${shortId}`,
+                () => submitFirstReport(coverPageURL, 'facId', shortId));
+            addItem('Journal Report', `FDEP FIRST \u00b7 Facility ID ${facid}`,
+                () => submitFirstReport(journalReportURL, 'facid', facid));
+
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const wasHidden = panel.classList.contains('hidden');
+                document.querySelectorAll('.dd-panel').forEach(p => p.classList.add('hidden'));
+                if (wasHidden) panel.classList.remove('hidden');
+            };
+
+            wrap.appendChild(btn);
+            wrap.appendChild(panel);
+            return [wrap];
         };
 
         // Red disclaimer (form view only): shown when this FACID shares an address with another
@@ -1835,9 +1886,9 @@
             setSunshineMode(!sunshineMode);
             (sunshineMode ? sunshineInput : facnameInput).focus();
         });
-        // Close any open PA dropdown on an outside click.
+        // Close any open dropdown panel (PA, Compliance History) on an outside click.
         document.addEventListener('click', () => {
-            document.querySelectorAll('.pa-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.dd-panel').forEach(p => p.classList.add('hidden'));
         });
         ericInput.addEventListener('input', () => {
             ericSearchButton.disabled = ericInput.value.replace(/\D/g, '').length === 0;
